@@ -24,9 +24,6 @@ public class User extends BaseEntity {
 
     private String country;
 
-    private String organisation;
-
-    private String organisationUnit;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Admin admin;

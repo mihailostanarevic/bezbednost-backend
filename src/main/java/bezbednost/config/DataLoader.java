@@ -27,10 +27,8 @@ public class DataLoader implements ApplicationRunner {
         User user = new User();
         user.setCountry(String.format("Serbia"));
         user.setEmail(String.format("admin@gmail.com"));
-        user.setFirstName(String.format("New"));
+        user.setFirstName(String.format("Predef"));
         user.setLastName(String.format("Admin"));
-        user.setOrganisation(String.format("UNS-FTN"));
-        user.setOrganisationUnit(String.format("E2"));
         user.setUserType(UserType.ADMIN);
         UUID adminId = UUID.fromString("a351022a-cc7a-4a17-a79b-8e0cf258db07");
         Admin admin = adminRepository.findOneById(adminId);
