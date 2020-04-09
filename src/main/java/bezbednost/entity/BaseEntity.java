@@ -1,5 +1,6 @@
 package bezbednost.entity;
 
+import bezbednost.util.enums.UserType;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,4 +19,5 @@ public abstract class BaseEntity {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
+
 }

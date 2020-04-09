@@ -8,8 +8,18 @@ import bezbednost.repository.IUserCertificateRepository;
 import bezbednost.repository.IUserRepository;
 import bezbednost.service.IUserCertificateService;
 import bezbednost.util.enums.UserType;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -88,4 +98,40 @@ public class UserCertificateService implements IUserCertificateService {
 
         return userResponse;
     }
+/*
+    private X509Certificate generateCertificate(UserCertificate subjectData) throws CertificateException {
+        JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
+        builder = builder.setProvider("BC");
+
+        ContentSigner contentSigner = builder.build(issuerData.getPrivateKey());
+
+        X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuerData.getX500name(),
+                new BigInteger(subjectData.getSerialNumber()),
+                subjectData.getStartDate(),
+                subjectData.getEndDate(),
+                subjectData.getX500name(),
+                subjectData.getPublicKey());
+        X509CertificateHolder certHolder = certGen.build(contentSigner);
+
+        JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
+        certConverter = certConverter.setProvider("BC");
+
+        return certConverter.getCertificate(certHolder);
+    }
+
+    private X500NameBuilder getX500Name(UserCertificate user){
+        X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+        User u =
+        String cn = user.n
+        builder.addRDN(BCStyle.CN, "Goran Sladic");
+        builder.addRDN(BCStyle.SURNAME, "Sladic");
+        builder.addRDN(BCStyle.GIVENNAME, "Goran");
+        builder.addRDN(BCStyle.O, "UNS-FTN");
+        builder.addRDN(BCStyle.OU, "Katedra za informatiku");
+        builder.addRDN(BCStyle.C, "RS");
+        builder.addRDN(BCStyle.E, "sladicg@uns.ac.rs");
+        //UID (USER ID) je ID korisnika
+        builder.addRDN(BCStyle.UID, "123456");
+    }
+ */
 }
