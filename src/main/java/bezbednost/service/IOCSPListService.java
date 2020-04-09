@@ -24,6 +24,6 @@ public interface IOCSPListService {
 
     RevocationStatus activate(X509Certificate certificate, UUID id);
 
-//    Boolean checkCertificateValidity(X509Certificate certificate);
+    Boolean checkCertificateValidity(X509Certificate certificate);
 
 }
