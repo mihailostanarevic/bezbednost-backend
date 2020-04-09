@@ -26,5 +26,7 @@ public class UserCertificateResponse {
 
     private String organisationUnit;
 
+    private String serialNumber;
+
     private Date date;
 }
