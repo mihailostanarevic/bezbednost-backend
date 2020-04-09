@@ -19,19 +19,11 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OCSPEntity {
-
-    @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    private UUID id;
-
+public class OCSPEntity extends BaseEntity {
 
     @Column(name = "serial_num")
     private BigInteger serialNum;
 
     private UUID revoker;
-
-
 
 }

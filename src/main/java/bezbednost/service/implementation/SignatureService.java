@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.security.*;
 import java.security.cert.X509Certificate;
 
-@SuppressWarnings({"SpellCheckingInspection", "TryWithIdenticalCatches"})
+@SuppressWarnings({"SpellCheckingInspection", "TryWithIdenticalCatches", "ImplicitArrayToString", "unused"})
 public class SignatureService implements ISignatureService {
 
     @Autowired
@@ -16,19 +16,22 @@ public class SignatureService implements ISignatureService {
     public KeyPair generateKeys() {
         try {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+            SecureRandom random = SecureRandom.getInstanceStrong();
             keyGen.initialize(2048, random);
 
             return keyGen.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
+    /**
+     * @param certificate the certificate to be signed
+     * @param privateKey CA private key
+     * @return digital signature
+     */
     @Override
     public byte[] sign(X509Certificate certificate, PrivateKey privateKey) {
         try {
@@ -53,6 +56,12 @@ public class SignatureService implements ISignatureService {
         return null;
     }
 
+    /**
+     * @param certificate the certificate to be verified
+     * @param signature digital signature in certificate
+     * @param publicKey CA public key
+     * @return true - valid signature, false - invalid signature
+     */
     @Override
     public boolean verify(X509Certificate certificate, byte[] signature, PublicKey publicKey) {
         try {

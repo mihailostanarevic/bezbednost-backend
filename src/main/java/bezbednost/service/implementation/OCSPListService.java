@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.Null;
 import java.math.BigInteger;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -25,6 +26,9 @@ public class OCSPListService implements IOCSPListService {
 
     @Autowired
     IOCSPListRepository iocspListRepository;
+
+    @Autowired
+    SignatureService signatureService;
 
     @Override
     public OCSPEntity findOneById(UUID id) {
@@ -127,9 +131,7 @@ public class OCSPListService implements IOCSPListService {
         }
 
         if (checkDate(certificate, this.currentDate)) {
-            // TODO (A) checkDigitalSignature() -
-            //  uzmi javni kljuc od roditelja, desifruj potpis, uporedi rezultat sa mojim sert
-            if (true) {
+            if (checkDigitalSignature(certificate, parentCertificate)) {
                 if (certStatus.equals(RevocationStatus.GOOD)) {
                     if(certificate.equals(parentCertificate)){
                         // sertifikat je validan
@@ -166,6 +168,13 @@ public class OCSPListService implements IOCSPListService {
         }
 
         return false;
+    }
+
+    private boolean checkDigitalSignature(X509Certificate certificate, X509Certificate parentCertificate) {
+        byte[] signature = certificate.getSignature();
+        PublicKey publicKey = parentCertificate.getPublicKey();
+
+        return signatureService.verify(certificate, signature, publicKey);
     }
 
     // TODO (A) preuzeti sertifikat na osnovu imena
