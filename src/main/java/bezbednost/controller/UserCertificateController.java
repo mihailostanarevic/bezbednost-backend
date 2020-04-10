@@ -3,8 +3,10 @@ package bezbednost.controller;
 import bezbednost.dto.request.CreateUserCertificateRequest;
 import bezbednost.dto.response.UserCertificateResponse;
 import bezbednost.service.implementation.UserCertificateService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +21,7 @@ public class UserCertificateController {
     }
 
     @PostMapping
-    public UserCertificateResponse createUserCertificate(@RequestBody CreateUserCertificateRequest request) throws Exception {
+    public ResponseEntity<String> createUserCertificate(@RequestBody CreateUserCertificateRequest request) throws Exception {
         return _userCertificateService.createUserCertificate(request);
     }
 

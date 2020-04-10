@@ -2,6 +2,8 @@ package bezbednost.dto.request;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class CreateUserCertificateRequest {
 
@@ -24,4 +26,6 @@ public class CreateUserCertificateRequest {
     private boolean certificateAuthority;
 
     private String issuerEmail;
+
+    private Date endDate;
 }
