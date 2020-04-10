@@ -4,10 +4,8 @@ import bezbednost.entity.OCSPEntity;
 import bezbednost.repository.IOCSPListRepository;
 import bezbednost.service.IOCSPListService;
 import bezbednost.util.enums.RevocationStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
-import javax.validation.constraints.Null;
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -24,30 +22,33 @@ public class OCSPListService implements IOCSPListService {
 
     private String currentDate = java.time.LocalDate.now().toString();
 
-    @Autowired
-    IOCSPListRepository iocspListRepository;
+    private final IOCSPListRepository _ocspListRepository;
 
-    @Autowired
-    SignatureService signatureService;
+    private final SignatureService _signatureService;
 
-    @Override
-    public OCSPEntity findOneById(UUID id) {
-        return iocspListRepository.findOneById(id);
+    public OCSPListService(IOCSPListRepository ocspListRepository, SignatureService signatureService) {
+        _ocspListRepository = ocspListRepository;
+        _signatureService = signatureService;
     }
 
     @Override
-    public OCSPEntity findOneBySerialNum(BigInteger serial_num) {
-        return iocspListRepository.findOneBySerialNum(serial_num);
+    public OCSPEntity getOCSPEntity(UUID id) {
+        return _ocspListRepository.findOneById(id);
     }
 
     @Override
-    public List<OCSPEntity> findAll() {
-        return iocspListRepository.findAll();
+    public OCSPEntity getOCSPEntityBySerialNum(BigInteger serial_num) {
+        return _ocspListRepository.findOneBySerialNum(serial_num);
     }
 
     @Override
-    public List<OCSPEntity> findAllByRevoker(UUID id) {
-        return findAllByRevoker(id);
+    public List<OCSPEntity> getAll() {
+        return _ocspListRepository.findAll();
+    }
+
+    @Override
+    public List<OCSPEntity> getAllByRevoker(UUID id) {
+        return _ocspListRepository.findAllByRevoker(id);
     }
 
     /**
@@ -58,7 +59,7 @@ public class OCSPListService implements IOCSPListService {
      * */
     @Override
     public RevocationStatus check(X509Certificate certificate, X509Certificate issuerCert) throws NullPointerException {
-        OCSPEntity revokedCert = findOneBySerialNum(certificate.getSerialNumber());
+        OCSPEntity revokedCert = getOCSPEntityBySerialNum(certificate.getSerialNumber());
         String issuerName = issuerCert.getSubjectDN().getName();
         if (revokedCert != null){
             return RevocationStatus.REVOKED;
@@ -86,11 +87,11 @@ public class OCSPListService implements IOCSPListService {
             return RevocationStatus.UNKNOWN;
         }
 
-        if(findOneBySerialNum(certificate.getSerialNumber()) == null){
+        if(getOCSPEntityBySerialNum(certificate.getSerialNumber()) == null){
             OCSPEntity ocsp = new OCSPEntity();
             ocsp.setRevoker(id);
             ocsp.setSerialNum(certificate.getSerialNumber());
-            iocspListRepository.save(ocsp);
+            _ocspListRepository.save(ocsp);
         }
 
         return RevocationStatus.REVOKED;
@@ -104,9 +105,9 @@ public class OCSPListService implements IOCSPListService {
      */
     @Override
     public RevocationStatus activate(X509Certificate certificate, UUID id) throws NullPointerException {
-        OCSPEntity ocsp = findOneBySerialNum(certificate.getSerialNumber());
+        OCSPEntity ocsp = getOCSPEntityBySerialNum(certificate.getSerialNumber());
         if (ocsp != null && ocsp.getRevoker().equals(id)){
-            iocspListRepository.deleteById(ocsp.getId());
+            _ocspListRepository.deleteById(ocsp.getId());
             return RevocationStatus.GOOD;
         }
         else {
@@ -174,7 +175,7 @@ public class OCSPListService implements IOCSPListService {
         byte[] signature = certificate.getSignature();
         PublicKey publicKey = parentCertificate.getPublicKey();
 
-        return signatureService.verify(certificate, signature, publicKey);
+        return _signatureService.verify(certificate, signature, publicKey);
     }
 
     // TODO (A) preuzeti sertifikat na osnovu imena

@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public interface IOCSPListService {
 
-    OCSPEntity findOneById(UUID id);
+    OCSPEntity getOCSPEntity(UUID id);
 
-    OCSPEntity findOneBySerialNum(BigInteger serial_num);
+    OCSPEntity getOCSPEntityBySerialNum(BigInteger serial_num);
 
-    List<OCSPEntity> findAll();
+    List<OCSPEntity> getAll();
 
-    List<OCSPEntity> findAllByRevoker(UUID id);
+    List<OCSPEntity> getAllByRevoker(UUID id);
 
     RevocationStatus check(X509Certificate certificate, X509Certificate issuerCert);
 
