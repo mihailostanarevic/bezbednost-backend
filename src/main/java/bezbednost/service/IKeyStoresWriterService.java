@@ -5,6 +5,6 @@ import java.security.cert.Certificate;
 
 public interface IKeyStoresWriterService {
 
-    public void write(String alias, PrivateKey privateKey, String fileName, String password, Certificate certificate);
+    void write(String alias, PrivateKey privateKey, String fileName, String password, Certificate certificate);
 
 }

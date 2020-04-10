@@ -1,7 +1,6 @@
 package bezbednost.service.implementation;
 
 import bezbednost.service.ISignatureService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.*;
 import java.security.cert.X509Certificate;
@@ -9,8 +8,11 @@ import java.security.cert.X509Certificate;
 @SuppressWarnings({"SpellCheckingInspection", "TryWithIdenticalCatches", "ImplicitArrayToString", "unused"})
 public class SignatureService implements ISignatureService {
 
-    @Autowired
-    HashService hashService;
+    private final HashService _hashService;
+
+    public SignatureService(HashService hashService) {
+        _hashService = hashService;
+    }
 
     @Override
     public KeyPair generateKeys() {
@@ -39,7 +41,7 @@ public class SignatureService implements ISignatureService {
             sig.initSign(privateKey);
 
             byte[] salt = certificate.getSerialNumber().toByteArray();
-            byte[] hashedCertificate = hashService.hash(certificate.toString(), salt);
+            byte[] hashedCertificate = _hashService.hash(certificate.toString(), salt);
             System.out.println("HashedCertificate: " + hashedCertificate);
             //Postavljamo podatke koje potpisujemo
             sig.update(hashedCertificate);
@@ -69,7 +71,7 @@ public class SignatureService implements ISignatureService {
             sig.initVerify(publicKey);
 
             byte[] salt = certificate.getSerialNumber().toByteArray();
-            byte[] hashedCertificate = hashService.hash(certificate.toString(), salt);
+            byte[] hashedCertificate = _hashService.hash(certificate.toString(), salt);
             sig.update(hashedCertificate);
 
             return sig.verify(signature);
