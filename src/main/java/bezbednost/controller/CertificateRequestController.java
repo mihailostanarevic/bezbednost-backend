@@ -2,7 +2,7 @@ package bezbednost.controller;
 
 import bezbednost.dto.request.CertificateRequestRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
-import bezbednost.service.implementation.CertificateRequestRequestService;
+import bezbednost.service.implementation.CertificateRequestService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/certificate-requests")
-public class UserCertificateController {
+public class CertificateRequestController {
 
-    private final CertificateRequestRequestService _CertificateRequestService;
+    private final CertificateRequestService _CertificateRequestService;
 
-    public UserCertificateController(CertificateRequestRequestService certificateRequestService) {
+    public CertificateRequestController(CertificateRequestService certificateRequestService) {
         _CertificateRequestService = certificateRequestService;
     }
 

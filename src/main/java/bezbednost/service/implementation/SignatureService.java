@@ -1,6 +1,8 @@
 package bezbednost.service.implementation;
 
+import bezbednost.config.AlgorithmConfig;
 import bezbednost.service.ISignatureService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.*;
@@ -8,6 +10,9 @@ import java.security.cert.X509Certificate;
 
 @Service
 public class SignatureService implements ISignatureService {
+
+    @Autowired
+    AlgorithmConfig config;
 
     private final HashService _hashService;
 
@@ -29,6 +34,23 @@ public class SignatureService implements ISignatureService {
 
         return null;
     }
+
+    @Override
+    public KeyPair generateKeys(boolean isCA) {
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance(config.getKeyAlgorithm());
+            SecureRandom random = SecureRandom.getInstanceStrong();
+            if (isCA)
+                keyGen.initialize(config.getCaKeySize(), random);
+            else
+                keyGen.initialize(config.getUserKeysize(), random);
+            return keyGen.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /**
      * @param certificate the certificate to be signed
