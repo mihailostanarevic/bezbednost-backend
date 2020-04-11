@@ -1,9 +1,10 @@
 package bezbednost.service.implementation;
 
 import bezbednost.entity.OCSPEntity;
-import bezbednost.repository.IOCSPListRepository;
-import bezbednost.service.IOCSPListService;
+import bezbednost.repository.IOCSPRepository;
+import bezbednost.service.IOCSPService;
 import bezbednost.util.enums.RevocationStatus;
+import org.springframework.stereotype.Service;
 
 
 import java.math.BigInteger;
@@ -17,16 +18,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@SuppressWarnings({"unused", "InfiniteRecursion", "SpellCheckingInspection", "ConstantConditions"})
-public class OCSPListService implements IOCSPListService {
+@Service
+public class OCSPService implements IOCSPService {
 
     private String currentDate = java.time.LocalDate.now().toString();
 
-    private final IOCSPListRepository _ocspListRepository;
+    private final IOCSPRepository _ocspListRepository;
 
     private final SignatureService _signatureService;
 
-    public OCSPListService(IOCSPListRepository ocspListRepository, SignatureService signatureService) {
+    public OCSPService(IOCSPRepository ocspListRepository, SignatureService signatureService) {
         _ocspListRepository = ocspListRepository;
         _signatureService = signatureService;
     }

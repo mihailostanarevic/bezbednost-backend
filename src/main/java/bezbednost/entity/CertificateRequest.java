@@ -13,26 +13,28 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCertificate extends BaseEntity {
+public class CertificateRequest extends BaseEntity {
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private String firstName;
 
-    private Date date;
+    private String lastName;
+
+    @Column(unique = true)
+    private String email;
+
+    private String country;
+
+    private Date startAt;
+
+    private Date entAt;
 
     private String organisation;
 
     private String organisationUnit;
-
-    @Column(unique = true)
-    private String serialNumber;
 
     private String extension;
 
     private boolean isCertificateAuthority;
 
     private String issuerEmail;
-
-    private boolean deleted;
 }

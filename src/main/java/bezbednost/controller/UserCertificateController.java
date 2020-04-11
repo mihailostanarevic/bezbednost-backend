@@ -1,40 +1,35 @@
 package bezbednost.controller;
 
-import bezbednost.dto.request.CreateUserCertificateRequest;
-import bezbednost.dto.response.UserCertificateResponse;
-import bezbednost.service.implementation.UserCertificateService;
+import bezbednost.dto.request.CertificateRequestRequest;
+import bezbednost.dto.response.CertificateRequestResponse;
+import bezbednost.service.implementation.CertificateRequestRequestService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user-certificate")
+@RequestMapping("/certificate-requests")
 public class UserCertificateController {
 
-    private final UserCertificateService _userCertificateService;
+    private final CertificateRequestRequestService _CertificateRequestService;
 
-    public UserCertificateController(UserCertificateService userCertificateService) {
-        _userCertificateService = userCertificateService;
+    public UserCertificateController(CertificateRequestRequestService certificateRequestService) {
+        _CertificateRequestService = certificateRequestService;
     }
 
     @PostMapping
-    public UserCertificateResponse createUserCertificate(@RequestBody CreateUserCertificateRequest request) throws Exception {
-        return _userCertificateService.createUserCertificate(request);
+    public CertificateRequestResponse createCertificateRequest(@RequestBody CertificateRequestRequest request) throws Exception {
+        return _CertificateRequestService.createCertificateRequest(request);
     }
 
     @GetMapping
-    public List<UserCertificateResponse> getAllUserCertificates() throws Exception{
-        return _userCertificateService.getAllUserCertificates();
+    public List<CertificateRequestResponse> getAllCertificateRequests() throws Exception{
+        return _CertificateRequestService.getAllCertificateRequests();
     }
 
-    @GetMapping("/{id}/user-certficate")
-    public UserCertificateResponse getUserCertificate(@PathVariable UUID id) throws Exception{
-        return _userCertificateService.getUserCertificate(id);
-    }
-
-    @DeleteMapping("/{id}/user-certficate")
-    public void deleteUserCertificate(@PathVariable UUID id) throws Exception{
-        _userCertificateService.deleteUserCertificate(id);
+    @GetMapping("/{id}/certificate-request")
+    public CertificateRequestResponse getCertificateRequest(@PathVariable UUID id) throws Exception{
+        return _CertificateRequestService.getCertificateRequest(id);
     }
 }

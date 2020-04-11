@@ -1,9 +1,12 @@
 package bezbednost.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-public class CreateUserCertificateRequest {
+public class CertificateRequestRequest {
 
     private String firstName;
 
@@ -17,11 +20,12 @@ public class CreateUserCertificateRequest {
 
     private String organisationUnit;
 
-    private String serialNumber;
-
     private String extension;
 
     private boolean certificateAuthority;
 
     private String issuerEmail;
+
+    @JsonFormat(pattern = "yyyy/MM/dd")
+    private Date endDate;
 }
