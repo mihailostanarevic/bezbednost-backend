@@ -9,6 +9,7 @@ import bezbednost.repository.IUserRepository;
 import bezbednost.service.IKeyStoresReaderService;
 import bezbednost.service.IUserCertificateService;
 import bezbednost.util.enums.UserType;
+import ch.qos.logback.core.net.SyslogOutputStream;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
