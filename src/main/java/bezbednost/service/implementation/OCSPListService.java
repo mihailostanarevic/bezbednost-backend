@@ -241,10 +241,8 @@ public class OCSPListService implements IOCSPListService {
      * @param name Subject Name from certificate
      * @return End-User certificate that contains Subject Name from param
      * */
-    // TODO (A) promeni ovo za certEmail ( kad zavrsis sa postmanom )
     public X509Certificate getEndCertificateByName(String name) {
         String certEmail = getEmailFromName(name);
-        certEmail = "end1@gmail.com";
         List<X509Certificate> Certificates = _keyStoresReaderService.readAllCertificate("keystoreEndUser.jks", "admin");
         for (X509Certificate certificate : Certificates) {
             String subjectName = certificate.getSubjectDN().getName();

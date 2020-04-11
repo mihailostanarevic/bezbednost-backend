@@ -19,15 +19,9 @@ public class OcspController {
     @Autowired
     OCSPListService ocspListService;
 
-    @GetMapping(produces = "application/json", value = "/check/{email}")
-    public boolean checkValidity(@PathVariable("email") String email) {
-        X509Certificate certificate = ocspListService.getEndCertificateByName(email);
-        boolean ret = ocspListService.checkCertificateValidity(certificate);
-        return ret;
-    }
-
     @GetMapping
     public List<UserCertificateResponse> getAll() {
+        // TODO (A)
         return null;
     }
 
