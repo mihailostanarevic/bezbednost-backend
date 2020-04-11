@@ -1,5 +1,6 @@
 package bezbednost.controller;
 
+import bezbednost.dto.response.UserCertificateResponse;
 import bezbednost.service.implementation.OCSPListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,9 @@ public class OcspController {
     }
 
     @GetMapping
-    public List<>
+    public List<UserCertificateResponse> getAll() {
+        return null;
+    }
 
 
 
