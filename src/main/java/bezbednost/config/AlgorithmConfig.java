@@ -4,6 +4,7 @@ package bezbednost.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Configuration
 public class AlgorithmConfig {
 

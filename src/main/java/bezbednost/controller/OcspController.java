@@ -16,9 +16,6 @@ import java.util.List;
 @RequestMapping("/OCSPList")
 public class OcspController {
 
-    @Autowired
-    OCSPListService ocspListService;
-
     @GetMapping
     public List<UserCertificateResponse> getAll() {
         // TODO (A)
