@@ -12,6 +12,7 @@ public class CertificateConverter {
         CertificateResponseDTO certificateResponseDTO = new CertificateResponseDTO();
         HashMap<String, String> certData = getDataFromCertificate(certificate.getSubjectDN().getName());
         HashMap<String, String> parentData = getDataFromCertificate(certificate.getIssuerDN().getName());
+        certificateResponseDTO.setUuid(certData.get("uid"));
         certificateResponseDTO.setFirstName(certData.get("firstName"));
         certificateResponseDTO.setLastName(certData.get("lastName"));
         certificateResponseDTO.setCAemail(parentData.get("email"));

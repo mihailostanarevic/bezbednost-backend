@@ -47,4 +47,23 @@ public class CertificateController {
         return retList;
     }
 
+    @GetMapping(value = "/ca")
+    public List<CertificateResponseDTO> getAllValidCACertificates(){
+        List<CertificateResponseDTO> retList = new ArrayList<>();
+        List<X509Certificate> CACertificates = _certificateService.getAllActiveCACertificates();
+        List<X509Certificate> rootCertificates = _certificateService.getAllActiveRootCertificates();
+
+        for (X509Certificate certificate : CACertificates) {
+            CertificateResponseDTO certificateResponseDTO = CertificateConverter.toCertificateResponseDTO(certificate);
+            certificateResponseDTO.setCertificateType(CertificateType.INTERMEDIATE);
+            retList.add(certificateResponseDTO);
+        }
+        for (X509Certificate certificate : rootCertificates) {
+            CertificateResponseDTO certificateResponseDTO = CertificateConverter.toCertificateResponseDTO(certificate);
+            certificateResponseDTO.setCertificateType(CertificateType.ROOT);
+            retList.add(certificateResponseDTO);
+        }
+
+        return retList;
+    }
 }

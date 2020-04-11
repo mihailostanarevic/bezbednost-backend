@@ -6,12 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.UUID;
 
 @SuppressWarnings("SpellCheckingInspection")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CertificateResponseDTO {
+
+    private String uuid;
 
     private String firstName;
 
