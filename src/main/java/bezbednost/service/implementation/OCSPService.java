@@ -136,36 +136,39 @@ public class OCSPService implements IOCSPService {
      * @return true - valid certificate, false - invalid certificate
      * @throws RuntimeException end of recursion
      */
+
     @Override
-    public boolean checkCertificateValidity(X509Certificate certificate) throws  RuntimeException {
+    public boolean checkCertificateValidity(X509Certificate certificate) {
+        try {
+            checkCertificate(certificate);
+            return false;
+        }catch (RuntimeException e){
+            return true;
+        }
+    }
+
+    private void checkCertificate(X509Certificate certificate) throws RuntimeException {
         X509Certificate parentCertificate = getCACertificateByName(certificate.getIssuerDN().getName());
         RevocationStatus certStatus;
         try {
             certStatus = check(certificate, parentCertificate);
         }catch (NullPointerException e){
             System.out.println("Sertifikati imaju NULL vrednost.");
-            return false;
+            return;
         }
 
         if (checkDate(certificate, getCurrentDate())) {
             if (checkDigitalSignature(certificate, parentCertificate)) {
                 if (certStatus.equals(RevocationStatus.GOOD)) {
-                    if(certificate.equals(parentCertificate)){
+                    if(certificate.equals(parentCertificate)) {
                         throw new RuntimeException();
                     }
                     else{
-                        // ako nije root, proveravaj sad njega
-                        try {
-                            checkCertificateValidity(parentCertificate);
-                        }catch (RuntimeException e){
-                            return true;
-                        }
+                        checkCertificate(parentCertificate);
                     }
                 }
             }
         }
-
-        return false;
     }
 
     private boolean checkDate(X509Certificate certificate, String date){
@@ -215,7 +218,7 @@ public class OCSPService implements IOCSPService {
      * @param name Subject Name from CA certificate
      * @return CA certificate that contains Subject Name from param
      * */
-    public X509Certificate getCACertificateByName(String name) {
+    private X509Certificate getCACertificateByName(String name) {
         String certEmail = getEmailFromName(name);
 
         List<X509Certificate> CACertificates = _keyStoresReaderService.readAllCertificate("keystoreIntermediate.jks", "admin");
@@ -245,7 +248,7 @@ public class OCSPService implements IOCSPService {
      * @param name Subject Name from certificate
      * @return End-User certificate that contains Subject Name from param
      * */
-    public X509Certificate getEndCertificateByName(String name) {
+    private X509Certificate getEndCertificateByName(String name) {
         String certEmail = getEmailFromName(name);
         List<X509Certificate> Certificates = _keyStoresReaderService.readAllCertificate("keystoreEndUser.jks", "admin");
         for (X509Certificate certificate : Certificates) {
