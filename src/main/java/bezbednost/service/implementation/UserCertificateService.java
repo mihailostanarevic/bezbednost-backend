@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Service
 public class UserCertificateService implements IUserCertificateService {
 
