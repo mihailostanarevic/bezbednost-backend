@@ -118,7 +118,7 @@ public class OCSPListService implements IOCSPListService {
     @Override
     public RevocationStatus activate(X509Certificate certificate, UUID id) throws NullPointerException {
         OCSPEntity ocsp = getOCSPEntityBySerialNum(certificate.getSerialNumber());
-        if (ocsp != null && ocsp.getRevoker().equals(id)){
+        if (ocsp != null  && checkAdmin(id) && ocsp.getRevoker().equals(id)){
             _ocspListRepository.deleteById(ocsp.getId());
             return RevocationStatus.GOOD;
         }
@@ -128,7 +128,7 @@ public class OCSPListService implements IOCSPListService {
     }
 
     /**
-     * @param certificate the certificate to be revoked
+     * @param certificate the certificate to be validate
      * @return true - valid certificate, false - invalid certificate
      * @throws RuntimeException end of recursion
      */
@@ -173,14 +173,14 @@ public class OCSPListService implements IOCSPListService {
         try {
             Date currentDate = formatter.parse(date);
             certificate.checkValidity(currentDate);
-            System.out.println("\n" + "VALIDAN JE");
+            System.out.println("\n" + "Valid Date");
             return true;
         }catch(CertificateExpiredException e) {
-            System.out.println("\n" + "NIJE VALIDAN (CertificateExpiredException)");
+            System.out.println("\n" + "Invalid Date (CertificateExpiredException)");
         }catch(CertificateNotYetValidException e) {
-            System.out.println("\n" + "NIJE VALIDAN (CertificateNotYetValidException)");
+            System.out.println("\n" + "Invalid Date (CertificateNotYetValidException)");
         }catch (ParseException e) {
-            System.out.println("\n" + "DATUM NIJE DOBRO PARSIRAN (ParseException)");
+            System.out.println("\n" + "Date parse exception (ParseException)");
         }
 
         return false;
