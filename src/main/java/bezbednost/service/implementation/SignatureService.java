@@ -1,11 +1,12 @@
 package bezbednost.service.implementation;
 
 import bezbednost.service.ISignatureService;
+import org.springframework.stereotype.Service;
 
 import java.security.*;
 import java.security.cert.X509Certificate;
 
-@SuppressWarnings({"SpellCheckingInspection", "TryWithIdenticalCatches", "ImplicitArrayToString", "unused"})
+@Service
 public class SignatureService implements ISignatureService {
 
     private final HashService _hashService;

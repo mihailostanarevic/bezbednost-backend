@@ -1,13 +1,15 @@
 package bezbednost.service.implementation;
 
 import bezbednost.service.IHashService;
+import org.springframework.stereotype.Service;
+
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-@SuppressWarnings({"SpellCheckingInspection", "TryWithIdenticalCatches"})
+@Service
 public class HashService implements IHashService {
 
     @Override

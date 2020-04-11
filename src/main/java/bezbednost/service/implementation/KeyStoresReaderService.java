@@ -1,6 +1,7 @@
 package bezbednost.service.implementation;
 
 import bezbednost.service.IKeyStoresReaderService;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.*;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+@Service
 public class KeyStoresReaderService implements IKeyStoresReaderService {
 
     private KeyStore keyStore;

@@ -8,7 +8,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.UUID;
 
-public interface IOCSPListService {
+public interface IOCSPService {
 
     OCSPEntity getOCSPEntity(UUID id);
 

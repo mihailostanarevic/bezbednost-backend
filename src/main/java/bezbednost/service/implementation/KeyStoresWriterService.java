@@ -1,6 +1,7 @@
 package bezbednost.service.implementation;
 
 import bezbednost.service.IKeyStoresWriterService;
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,6 +11,7 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
+@Service
 public class KeyStoresWriterService implements IKeyStoresWriterService {
 
     private KeyStore keyStore;

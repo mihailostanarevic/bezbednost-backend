@@ -1,6 +1,5 @@
 package bezbednost.entity;
 
-import bezbednost.util.enums.UserType;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
