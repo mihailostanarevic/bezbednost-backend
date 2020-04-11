@@ -14,5 +14,4 @@ public interface ISignatureService {
     byte[] sign(X509Certificate certificate, PrivateKey privateKey);
 
     boolean verify(X509Certificate certificate, byte[] signature, PublicKey publicKey);
-
 }
