@@ -9,8 +9,6 @@ import bezbednost.repository.IUserRepository;
 import bezbednost.service.IKeyStoresReaderService;
 import bezbednost.service.IUserCertificateService;
 import bezbednost.util.enums.UserType;
-import ch.qos.logback.core.net.SyslogOutputStream;
-import keyStore.KeyStoreWriter;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -40,6 +38,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Service
 public class UserCertificateService implements IUserCertificateService {
 
