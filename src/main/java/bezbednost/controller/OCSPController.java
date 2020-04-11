@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("ALL")
 @RestController
 @RequestMapping("/ocsp")
-public class OCSPController {
 public class OcspController {
 
     private final IOCSPService _ocspService;
