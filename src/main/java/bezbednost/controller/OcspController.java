@@ -22,6 +22,4 @@ public class OcspController {
         return null;
     }
 
-
-
 }
