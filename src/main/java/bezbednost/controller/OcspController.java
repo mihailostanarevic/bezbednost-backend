@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/ocsp")
 public class OcspController {
 
-    @GetMapping
-    public List<UserCertificateResponse> getAll() {
-        // TODO (A)
-        return null;
-    }
+//    @GetMapping
+//    public List<UserCertificateResponse> getAll() {
+//        // TODO (A)
+//        return null;
+//    }
 
 }

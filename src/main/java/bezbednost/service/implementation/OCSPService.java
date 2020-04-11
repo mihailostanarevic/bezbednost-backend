@@ -26,7 +26,6 @@ import java.util.UUID;
 @Service
 public class OCSPService implements IOCSPService {
 
-
     private final IOCSPRepository _ocspListRepository;
 
     private final ISignatureService _signatureService;

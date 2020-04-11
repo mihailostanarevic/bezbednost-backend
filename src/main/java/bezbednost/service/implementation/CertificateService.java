@@ -16,7 +16,7 @@ public class CertificateService implements ICertificateService {
     KeyStoresReaderService _keyStoresReaderService;
 
     @Autowired
-    OCSPListService _ocspListService;
+    OCSPService _ocspListService;
 
     @Override
     public List<X509Certificate> getAllActiveEndUserCertificates() {
