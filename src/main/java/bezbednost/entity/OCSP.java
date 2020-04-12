@@ -19,11 +19,14 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OCSPEntity extends BaseEntity {
+public class OCSP extends BaseEntity {
 
     @Column(name = "serial_num")
     private BigInteger serialNum;
 
     private UUID revoker;
 
+    private String subject;
+
+    private String issuer;
 }

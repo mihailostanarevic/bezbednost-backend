@@ -3,7 +3,9 @@ package bezbednost.service.implementation;
 import bezbednost.dto.request.CertificateRequestRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
 import bezbednost.entity.CertificateRequest;
+import bezbednost.entity.Incrementer;
 import bezbednost.repository.ICertificateRequestRepository;
+import bezbednost.repository.IIncrementerRepository;
 import bezbednost.service.ICertificateRequestService;
 import bezbednost.service.IKeyStoresReaderService;
 import bezbednost.service.IKeyStoresWriterService;
@@ -45,11 +47,17 @@ public class CertificateRequestService implements ICertificateRequestService {
 
     private final IKeyStoresWriterService _keyStoreWriterService;
 
-    public CertificateRequestService(ICertificateRequestRepository certificateRequestRepository, IKeyStoresReaderService keyStoresReaderService, ISignatureService signatureService, IKeyStoresWriterService keyStoresWriterService) {
+    private final IIncrementerRepository _incrementerRepository;
+
+    private final IKeyStoresWriterService _keyStoresWriterService;
+
+    public CertificateRequestService(ICertificateRequestRepository certificateRequestRepository, IKeyStoresReaderService keyStoresReaderService, ISignatureService signatureService, IKeyStoresWriterService keyStoresWriterService, IIncrementerRepository incrementerRepository, IKeyStoresWriterService keyStoresWriterService1) {
         _certificateRequestRepository = certificateRequestRepository;
         _keyStoresReaderService = keyStoresReaderService;
         _signatureService = signatureService;
         _keyStoreWriterService = keyStoresWriterService;
+        _incrementerRepository = incrementerRepository;
+        _keyStoresWriterService = keyStoresWriterService1;
     }
 
     @Override
@@ -90,8 +98,9 @@ public class CertificateRequestService implements ICertificateRequestService {
     @Override
     public void approveCertificateRequest(CertificateRequestRequest request) throws Exception {
         CertificateRequest certificateRequest = _certificateRequestRepository.findOneByEmail(request.getEmail());
+        X509Certificate certificate = generateCertificate(request, certificateRequest.getId());
+        //_keyStoreWriterService.write();
         _certificateRequestRepository.delete(certificateRequest);
-        //generisanje sertifikata, i cuvanje u keystore
     }
 
     @Override
@@ -168,14 +177,19 @@ public class CertificateRequestService implements ICertificateRequestService {
 
         //Pravljenje identiteta na sertifikatu
         X500Name x500Name = this.getX500Name(data, id);
-
+        Incrementer incrementer = _incrementerRepository.findAll().get(0);
         //build-ovanje sertifikata
         X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(new JcaX509CertificateHolder(issuerCert).getSubject(),
-                new BigInteger("123"),
+
+                new BigInteger(incrementer.toString()),
                 new Date(),
                 data.getEndDate(),
                 x500Name,
                 keyPair.getPublic());
+
+        int newInc = incrementer.getInc() + 1;
+        incrementer.setInc(newInc);
+        _incrementerRepository.save(incrementer);
 
         //Dodavanje ekstenzije da je CA ukoliko je to uneto u formi
         if(data.isCertificateAuthority()){
