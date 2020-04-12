@@ -1,7 +1,11 @@
 package bezbednost.service;
 
+import org.springframework.http.ResponseEntity;
+
+import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.UUID;
 
 public interface ICertificateService {
 
@@ -11,4 +15,7 @@ public interface ICertificateService {
 
     List<X509Certificate> getAllActiveRootCertificates();
 
+    void saveCertificate(X509Certificate certificate, String extension) throws IOException;
+
+    ResponseEntity<Object> downloadCertificate(String email);
 }
