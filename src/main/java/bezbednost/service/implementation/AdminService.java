@@ -19,9 +19,4 @@ public class AdminService implements IAdminService {
     public Admin findOneById(UUID id) {
         return _adminRepository.findOneById(id);
     }
-
-    @Override
-    public List<Admin> findAll() {
-        return _adminRepository.findAll();
-    }
 }

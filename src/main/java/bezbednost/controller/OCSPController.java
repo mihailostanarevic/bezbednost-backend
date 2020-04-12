@@ -1,9 +1,11 @@
 package bezbednost.controller;
 
 import bezbednost.service.IOCSPService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@SuppressWarnings("ALL")
 @RestController
 @RequestMapping("/ocsp")
 public class OCSPController {
@@ -13,4 +15,7 @@ public class OCSPController {
     public OCSPController(IOCSPService ocspService) {
         _ocspService = ocspService;
     }
+
+    @GetMapping
+    public
 }

@@ -102,6 +102,12 @@ public class OCSPService implements IOCSPService {
             OCSPEntity ocsp = new OCSPEntity();
             ocsp.setRevoker(id);
             ocsp.setSerialNum(certificate.getSerialNumber());
+            String subject = certificate.getSubjectDN().getName();
+            String email = getEmailFromName(subject);
+            ocsp.setEmail(email);
+            String issuer = certificate.getIssuerDN().getName();
+            System.out.println(issuer);
+            ocsp.setIssuer(issuer);
             _ocspListRepository.save(ocsp);
         }
 

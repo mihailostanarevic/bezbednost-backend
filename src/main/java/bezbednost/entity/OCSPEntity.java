@@ -14,7 +14,7 @@ import java.math.BigInteger;
 import java.util.UUID;
 
 @SuppressWarnings({"unused"})
-@Entity
+@Entity(name = "ocsp")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,4 +26,7 @@ public class OCSPEntity extends BaseEntity {
 
     private UUID revoker;
 
+    private String email;
+
+    private String issuer;
 }

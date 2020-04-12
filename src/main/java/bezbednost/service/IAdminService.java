@@ -9,6 +9,4 @@ public interface IAdminService {
 
     Admin findOneById(UUID id);
 
-    List<Admin> findAll();
-
 }
