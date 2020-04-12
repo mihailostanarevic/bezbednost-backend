@@ -1,5 +1,6 @@
 package bezbednost.service;
 
+import bezbednost.dto.request.DownloadRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -17,5 +18,5 @@ public interface ICertificateService {
 
     void saveCertificate(X509Certificate certificate, String extension) throws IOException;
 
-    ResponseEntity<Object> downloadCertificate(String email);
+    ResponseEntity<Object> downloadCertificate(DownloadRequest request);
 }
