@@ -98,7 +98,7 @@ public class CertificateService implements ICertificateService {
     public void saveCertificate(X509Certificate certificate, String extension) throws IOException {
         String fileName = certificate.getSubjectDN().getName().split(",")[0].split("=")[1].trim();
         String fn = fileName + extension;
-        fileName = "certificates\\" + fileName + extension;
+        fileName = "bezbednost\\certificates\\" + fileName + extension;
 
         StringWriter sw = new StringWriter();
         try ( JcaPEMWriter pw = new JcaPEMWriter( sw ) )

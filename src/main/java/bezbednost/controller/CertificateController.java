@@ -22,7 +22,7 @@ public class CertificateController {
     @Autowired
     CertificateService _certificateService;
 
-    @GetMapping
+    @GetMapping()
     public List<CertificateResponseDTO> getAllValidCertificates(){
         List<CertificateResponseDTO> retList = new ArrayList<>();
         List<X509Certificate> endUserCertificates = _certificateService.getAllActiveEndUserCertificates();
@@ -48,6 +48,20 @@ public class CertificateController {
         return retList;
     }
 
+    @GetMapping("/end-user")
+    public List<CertificateResponseDTO> getAllEndUserCertificates(){
+        List<CertificateResponseDTO> retList = new ArrayList<>();
+        List<X509Certificate> endUserCertificates = _certificateService.getAllActiveEndUserCertificates();
+
+        for (X509Certificate certificate : endUserCertificates) {
+            CertificateResponseDTO certificateResponseDTO = CertificateConverter.toCertificateResponseDTO(certificate);
+            certificateResponseDTO.setCertificateType(CertificateType.END_USER);
+            retList.add(certificateResponseDTO);
+        }
+
+        return retList;
+    }
+
     @GetMapping(value = "/ca")
     public List<CertificateResponseDTO> getAllValidCACertificates(){
         List<CertificateResponseDTO> retList = new ArrayList<>();
@@ -59,6 +73,20 @@ public class CertificateController {
             certificateResponseDTO.setCertificateType(CertificateType.INTERMEDIATE);
             retList.add(certificateResponseDTO);
         }
+        for (X509Certificate certificate : rootCertificates) {
+            CertificateResponseDTO certificateResponseDTO = CertificateConverter.toCertificateResponseDTO(certificate);
+            certificateResponseDTO.setCertificateType(CertificateType.ROOT);
+            retList.add(certificateResponseDTO);
+        }
+
+        return retList;
+    }
+
+    @GetMapping("/root")
+    public List<CertificateResponseDTO> getAllRootCertificates(){
+        List<CertificateResponseDTO> retList = new ArrayList<>();
+        List<X509Certificate> rootCertificates = _certificateService.getAllActiveRootCertificates();
+
         for (X509Certificate certificate : rootCertificates) {
             CertificateResponseDTO certificateResponseDTO = CertificateConverter.toCertificateResponseDTO(certificate);
             certificateResponseDTO.setCertificateType(CertificateType.ROOT);

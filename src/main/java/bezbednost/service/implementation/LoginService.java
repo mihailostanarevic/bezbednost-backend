@@ -22,11 +22,11 @@ public class LoginService implements ILoginService {
         Admin admin = _adminRepository.findOneByEmail(request.getEmail());
 
         if (admin == null) {
-            throw new Exception(String.format("Wrong e-mail address."));
+            throw new Exception(String.format("Bad credentials."));
         }
 
         if (!admin.getPassword().equals(request.getPassword())) {
-            throw new Exception("Wrong password.");
+            throw new Exception("Bad credentials.");
         }
 
         LoginResponse loginResponse = new LoginResponse();

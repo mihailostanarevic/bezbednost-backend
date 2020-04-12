@@ -2,7 +2,7 @@ package bezbednost.service.implementation;
 
 import bezbednost.dto.response.OCSPResponse;
 import bezbednost.entity.Admin;
-import bezbednost.entity.OCSP;
+import bezbednost.entity.OCSPEntity;
 import bezbednost.repository.IOCSPRepository;
 import bezbednost.service.IAdminService;
 import bezbednost.service.IOCSPService;
@@ -50,20 +50,20 @@ public class OCSPService implements IOCSPService {
     }
 
     @Override
-    public OCSP getOCSPEntityBySerialNum(BigInteger serial_num) {
+    public OCSPEntity getOCSPEntityBySerialNum(BigInteger serial_num) {
         return _OCSPRepository.findOneBySerialNum(serial_num);
     }
 
     @Override
     public List<OCSPResponse> getAll() {
-        List<OCSP> ocsps = _OCSPRepository.findAll();
-        return ocsps.stream()
-                .map(ocsp -> mapOCSPtoOCSPResponse(ocsp))
+        List<OCSPEntity> ocspEntities = _OCSPRepository.findAll();
+        return ocspEntities.stream()
+                .map(ocspEntity -> mapOCSPtoOCSPResponse(ocspEntity))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<OCSP> getAllByRevoker(UUID id) {
+    public List<OCSPEntity> getAllByRevoker(UUID id) {
         return _OCSPRepository.findAllByRevoker(id);
     }
 
@@ -75,7 +75,7 @@ public class OCSPService implements IOCSPService {
      * */
     @Override
     public RevocationStatus check(X509Certificate certificate, X509Certificate issuerCert) throws NullPointerException {
-        OCSP revokedCert = getOCSPEntityBySerialNum(certificate.getSerialNumber());
+        OCSPEntity revokedCert = getOCSPEntityBySerialNum(certificate.getSerialNumber());
         String issuerName = issuerCert.getSubjectDN().getName();
         X509Certificate checkIssuer = getCACertificateByName(issuerName);
 
@@ -102,9 +102,9 @@ public class OCSPService implements IOCSPService {
             return RevocationStatus.UNKNOWN;
         }
 
-        OCSP ocspEntity = getOCSPEntityBySerialNum(certificate.getSerialNumber());
+        OCSPEntity ocspEntity = getOCSPEntityBySerialNum(certificate.getSerialNumber());
         if(ocspEntity == null){
-            OCSP ocsp = new OCSP();
+            OCSPEntity ocsp = new OCSPEntity();
             ocsp.setRevoker(id);
             ocsp.setSerialNum(certificate.getSerialNumber());
             System.out.println(certificate.getIssuerDN().getName());
@@ -131,9 +131,9 @@ public class OCSPService implements IOCSPService {
      */
     @Override
     public RevocationStatus activate(X509Certificate certificate, UUID id) throws NullPointerException {
-        OCSP ocsp = getOCSPEntityBySerialNum(certificate.getSerialNumber());
-        if (ocsp != null  && checkAdmin(id) && ocsp.getRevoker().equals(id)){
-            _OCSPRepository.deleteById(ocsp.getId());
+        OCSPEntity ocspEntity = getOCSPEntityBySerialNum(certificate.getSerialNumber());
+        if (ocspEntity != null  && checkAdmin(id) && ocspEntity.getRevoker().equals(id)){
+            _OCSPRepository.deleteById(ocspEntity.getId());
             return RevocationStatus.GOOD;
         }
         else {
@@ -181,13 +181,13 @@ public class OCSPService implements IOCSPService {
         }
     }
 
-    private OCSPResponse mapOCSPtoOCSPResponse(OCSP ocsp){
+    private OCSPResponse mapOCSPtoOCSPResponse(OCSPEntity ocspEntity){
         OCSPResponse response = new OCSPResponse();
-        response.setId(ocsp.getId());
-        response.setIssuer(ocsp.getIssuer());
-        response.setSubject(ocsp.getSubject());
-        response.setRevoker(ocsp.getRevoker());
-        response.setSerialNum(ocsp.getSerialNum());
+        response.setId(ocspEntity.getId());
+        response.setIssuer(ocspEntity.getIssuer());
+        response.setSubject(ocspEntity.getSubject());
+        response.setRevoker(ocspEntity.getRevoker());
+        response.setSerialNum(ocspEntity.getSerialNum());
         return response;
     }
 
