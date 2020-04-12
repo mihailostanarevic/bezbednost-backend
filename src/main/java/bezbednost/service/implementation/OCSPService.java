@@ -1,7 +1,8 @@
 package bezbednost.service.implementation;
 
+import bezbednost.dto.response.OCSPResponse;
 import bezbednost.entity.Admin;
-import bezbednost.entity.OCSPEntity;
+import bezbednost.entity.OCSP;
 import bezbednost.repository.IOCSPRepository;
 import bezbednost.service.IAdminService;
 import bezbednost.service.IOCSPService;
@@ -22,11 +23,13 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class OCSPService implements IOCSPService {
 
-    private final IOCSPRepository _ocspListRepository;
+
+    private final IOCSPRepository _OCSPRepository;
 
     private final ISignatureService _signatureService;
 
@@ -34,31 +37,34 @@ public class OCSPService implements IOCSPService {
 
     private final KeyStoresReaderService _keyStoresReaderService;
 
-    public OCSPService(IOCSPRepository ocspListRepository, SignatureService signatureService, IAdminService adminService, KeyStoresReaderService keyStoresReaderService) {
-        _ocspListRepository = ocspListRepository;
+    public OCSPService(IOCSPRepository OCSPRepository, SignatureService signatureService, IAdminService adminService, KeyStoresReaderService keyStoresReaderService) {
+        _OCSPRepository = OCSPRepository;
         _signatureService = signatureService;
         _adminService = adminService;
         _keyStoresReaderService = keyStoresReaderService;
     }
 
     @Override
-    public OCSPEntity getOCSPEntity(UUID id) {
-        return _ocspListRepository.findOneById(id);
+    public OCSPResponse getOCSPEntity(UUID id) {
+        return mapOCSPtoOCSPResponse(_OCSPRepository.findOneById(id));
     }
 
     @Override
-    public OCSPEntity getOCSPEntityBySerialNum(BigInteger serial_num) {
-        return _ocspListRepository.findOneBySerialNum(serial_num);
+    public OCSP getOCSPEntityBySerialNum(BigInteger serial_num) {
+        return _OCSPRepository.findOneBySerialNum(serial_num);
     }
 
     @Override
-    public List<OCSPEntity> getAll() {
-        return _ocspListRepository.findAll();
+    public List<OCSPResponse> getAll() {
+        List<OCSP> ocsps = _OCSPRepository.findAll();
+        return ocsps.stream()
+                .map(ocsp -> mapOCSPtoOCSPResponse(ocsp))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<OCSPEntity> getAllByRevoker(UUID id) {
-        return _ocspListRepository.findAllByRevoker(id);
+    public List<OCSP> getAllByRevoker(UUID id) {
+        return _OCSPRepository.findAllByRevoker(id);
     }
 
     /**
@@ -69,7 +75,7 @@ public class OCSPService implements IOCSPService {
      * */
     @Override
     public RevocationStatus check(X509Certificate certificate, X509Certificate issuerCert) throws NullPointerException {
-        OCSPEntity revokedCert = getOCSPEntityBySerialNum(certificate.getSerialNumber());
+        OCSP revokedCert = getOCSPEntityBySerialNum(certificate.getSerialNumber());
         String issuerName = issuerCert.getSubjectDN().getName();
         X509Certificate checkIssuer = getCACertificateByName(issuerName);
 
@@ -96,12 +102,17 @@ public class OCSPService implements IOCSPService {
             return RevocationStatus.UNKNOWN;
         }
 
-        OCSPEntity ocspEntity = getOCSPEntityBySerialNum(certificate.getSerialNumber());
+        OCSP ocspEntity = getOCSPEntityBySerialNum(certificate.getSerialNumber());
         if(ocspEntity == null){
-            OCSPEntity ocsp = new OCSPEntity();
+            OCSP ocsp = new OCSP();
             ocsp.setRevoker(id);
             ocsp.setSerialNum(certificate.getSerialNumber());
-            _ocspListRepository.save(ocsp);
+            System.out.println(certificate.getIssuerDN().getName());
+            String issuerEmail = getEmailFromName(certificate.getIssuerDN().getName());
+            String subjectEmail = getEmailFromName(certificate.getSubjectDN().getName());
+            ocsp.setIssuer(issuerEmail);
+            ocsp.setSubject(subjectEmail);
+            _OCSPRepository.save(ocsp);
         }
 
         return RevocationStatus.REVOKED;
@@ -120,9 +131,9 @@ public class OCSPService implements IOCSPService {
      */
     @Override
     public RevocationStatus activate(X509Certificate certificate, UUID id) throws NullPointerException {
-        OCSPEntity ocsp = getOCSPEntityBySerialNum(certificate.getSerialNumber());
+        OCSP ocsp = getOCSPEntityBySerialNum(certificate.getSerialNumber());
         if (ocsp != null  && checkAdmin(id) && ocsp.getRevoker().equals(id)){
-            _ocspListRepository.deleteById(ocsp.getId());
+            _OCSPRepository.deleteById(ocsp.getId());
             return RevocationStatus.GOOD;
         }
         else {
@@ -168,6 +179,16 @@ public class OCSPService implements IOCSPService {
                 }
             }
         }
+    }
+
+    private OCSPResponse mapOCSPtoOCSPResponse(OCSP ocsp){
+        OCSPResponse response = new OCSPResponse();
+        response.setId(ocsp.getId());
+        response.setIssuer(ocsp.getIssuer());
+        response.setSubject(ocsp.getSubject());
+        response.setRevoker(ocsp.getRevoker());
+        response.setSerialNum(ocsp.getSerialNum());
+        return response;
     }
 
     private boolean checkDate(X509Certificate certificate, String date){

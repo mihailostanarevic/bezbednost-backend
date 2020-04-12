@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface IKeyStoresReaderService {
 
-    List<String> readAliases (String keyStoreFile, String keyStorePass);
+    List<String> readAliases(String keyStoreFile, String keyStorePass);
 
-    List<X509Certificate> readAllCertificate (String keyStoreFile, String keyStorePass);
+    List<X509Certificate> readAllCertificate(String keyStoreFile, String keyStorePass);
 
     X509Certificate readCertificate(String keyStoreFile, String keyStorePass, String alias);
 
