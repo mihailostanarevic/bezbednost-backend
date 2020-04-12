@@ -32,9 +32,6 @@ import java.util.Date;
 public class DataLoader implements ApplicationRunner {
 
     @Autowired
-    private IAdminRepository adminRepository;
-
-    @Autowired
     private KeyStoresWriterService keyStoresWriterService;
 
     @Autowired
@@ -42,8 +39,9 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-
-
+        KeyPair keyPair = signatureService.generateKeys(true);
+        X509Certificate cert = this.createInitialRootCertificate(keyPair);
+        keyStoresWriterService.write("rootCA@gmail.com", keyPair.getPrivate(), "keystoreRoot.jks", "admin", cert);
     }
 
     private X509Certificate createInitialRootCertificate(KeyPair keyPair){

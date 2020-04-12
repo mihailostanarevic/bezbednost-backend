@@ -6,10 +6,7 @@ import bezbednost.entity.CertificateRequest;
 import bezbednost.entity.Incrementer;
 import bezbednost.repository.ICertificateRequestRepository;
 import bezbednost.repository.IIncrementerRepository;
-import bezbednost.service.ICertificateRequestService;
-import bezbednost.service.IKeyStoresReaderService;
-import bezbednost.service.IKeyStoresWriterService;
-import bezbednost.service.ISignatureService;
+import bezbednost.service.*;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -51,13 +48,16 @@ public class CertificateRequestService implements ICertificateRequestService {
 
     private final IKeyStoresWriterService _keyStoresWriterService;
 
-    public CertificateRequestService(ICertificateRequestRepository certificateRequestRepository, IKeyStoresReaderService keyStoresReaderService, ISignatureService signatureService, IKeyStoresWriterService keyStoresWriterService, IIncrementerRepository incrementerRepository, IKeyStoresWriterService keyStoresWriterService1) {
+    private final ICertificateService _certificateService;
+
+    public CertificateRequestService(ICertificateRequestRepository certificateRequestRepository, IKeyStoresReaderService keyStoresReaderService, ISignatureService signatureService, IKeyStoresWriterService keyStoresWriterService, IIncrementerRepository incrementerRepository, IKeyStoresWriterService keyStoresWriterService1, ICertificateService certificateService) {
         _certificateRequestRepository = certificateRequestRepository;
         _keyStoresReaderService = keyStoresReaderService;
         _signatureService = signatureService;
         _keyStoreWriterService = keyStoresWriterService;
         _incrementerRepository = incrementerRepository;
         _keyStoresWriterService = keyStoresWriterService1;
+        _certificateService = certificateService;
     }
 
     @Override
@@ -97,10 +97,12 @@ public class CertificateRequestService implements ICertificateRequestService {
 
     @Override
     public void approveCertificateRequest(CertificateRequestRequest request) throws Exception {
-        CertificateRequest certificateRequest = _certificateRequestRepository.findOneByEmail(request.getEmail());
+        System.out.println(request);
+        /*CertificateRequest certificateRequest = _certificateRequestRepository.findOneByEmail(request.getEmail());
         X509Certificate certificate = generateCertificate(request, certificateRequest.getId());
         //_keyStoreWriterService.write();
-        _certificateRequestRepository.delete(certificateRequest);
+        _certificateService.saveCertificate(certificate, request.getExtension());
+        _certificateRequestRepository.delete(certificateRequest);*/
     }
 
     @Override
@@ -159,7 +161,7 @@ public class CertificateRequestService implements ICertificateRequestService {
             return null;
          }
 */
-        KeyPair keyPair = this._signatureService.generateKeys();
+        KeyPair keyPair = this._signatureService.generateKeys(data.isCertificateAuthority());
 
         //Citam privatni kljuc izdavacu
         PrivateKey privKey = this._keyStoresReaderService.readPrivateKey("keystoreRoot.jks", "admin", data.getIssuerEmail(), "admin");

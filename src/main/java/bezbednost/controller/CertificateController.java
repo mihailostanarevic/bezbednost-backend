@@ -1,17 +1,18 @@
 package bezbednost.controller;
 
 import bezbednost.converter.CertificateConverter;
+import bezbednost.dto.request.CertificateRequestRequest;
 import bezbednost.dto.response.CertificateResponseDTO;
 import bezbednost.service.implementation.CertificateService;
 import bezbednost.util.enums.CertificateType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 @RestController
@@ -65,5 +66,10 @@ public class CertificateController {
         }
 
         return retList;
+    }
+
+    @PostMapping("/download")
+    public ResponseEntity<Object> downloadCertificate(@RequestBody String email){
+        return _certificateService.downloadCertificate(email);
     }
 }
