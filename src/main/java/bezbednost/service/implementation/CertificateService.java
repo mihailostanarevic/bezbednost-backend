@@ -1,5 +1,6 @@
 package bezbednost.service.implementation;
 
+import bezbednost.dto.request.DownloadRequest;
 import bezbednost.entity.FileRelations;
 import bezbednost.repository.IFileRelationsRepository;
 import bezbednost.service.ICertificateService;
@@ -72,8 +73,8 @@ public class CertificateService implements ICertificateService {
         return retList;
     }
 
-    public ResponseEntity<Object> downloadCertificate(String email){
-        FileRelations fr = _fileRelationsRepository.findOneByEmail(email);
+    public ResponseEntity<Object> downloadCertificate(DownloadRequest request){
+        FileRelations fr = _fileRelationsRepository.findOneByEmail(request.getEmail());
         String fileName = "certificates\\" + fr.getFileName();
 
         File file = new File(fileName);
@@ -98,7 +99,8 @@ public class CertificateService implements ICertificateService {
     public void saveCertificate(X509Certificate certificate, String extension) throws IOException {
         String fileName = certificate.getSubjectDN().getName().split(",")[0].split("=")[1].trim();
         String fn = fileName + extension;
-        fileName = "bezbednost\\certificates\\" + fileName + extension;
+
+        fileName = "certificates\\" + fileName + extension;
 
         StringWriter sw = new StringWriter();
         try ( JcaPEMWriter pw = new JcaPEMWriter( sw ) )

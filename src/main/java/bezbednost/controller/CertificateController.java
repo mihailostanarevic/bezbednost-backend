@@ -2,12 +2,14 @@ package bezbednost.controller;
 
 import bezbednost.converter.CertificateConverter;
 import bezbednost.dto.request.CertificateRequestRequest;
+import bezbednost.dto.request.DownloadRequest;
 import bezbednost.dto.response.CertificateResponseDTO;
 import bezbednost.service.implementation.CertificateService;
 import bezbednost.util.enums.CertificateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sun.misc.Request;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -97,7 +99,7 @@ public class CertificateController {
     }
 
     @PostMapping("/download")
-    public ResponseEntity<Object> downloadCertificate(@RequestBody String email){
-        return _certificateService.downloadCertificate(email);
+    public ResponseEntity<Object> downloadCertificate(@RequestBody DownloadRequest request){
+        return _certificateService.downloadCertificate(request);
     }
 }
