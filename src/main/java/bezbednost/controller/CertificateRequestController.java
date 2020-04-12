@@ -33,8 +33,8 @@ public class CertificateRequestController {
         return _certificateRequestService.getCertificateRequest(id);
     }
 
-    @DeleteMapping("/approve")
-    public void approveCertificateRequest(CertificateRequestRequest request) throws Exception{
+    @PostMapping("/approve")
+    public void approveCertificateRequest(@RequestBody CertificateRequestRequest request) throws Exception{
         _certificateRequestService.approveCertificateRequest(request);
     }
 

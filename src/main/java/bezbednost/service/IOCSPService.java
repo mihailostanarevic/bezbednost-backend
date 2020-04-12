@@ -1,7 +1,7 @@
 package bezbednost.service;
 
 import bezbednost.dto.response.OCSPResponse;
-import bezbednost.entity.OCSP;
+import bezbednost.entity.OCSPEntity;
 import bezbednost.util.enums.RevocationStatus;
 
 import java.math.BigInteger;
@@ -13,11 +13,11 @@ public interface IOCSPService {
 
     OCSPResponse getOCSPEntity(UUID id);
 
-    OCSP getOCSPEntityBySerialNum(BigInteger serial_num);
+    OCSPEntity getOCSPEntityBySerialNum(BigInteger serial_num);
 
     List<OCSPResponse> getAll();
 
-    List<OCSP> getAllByRevoker(UUID id);
+    List<OCSPEntity> getAllByRevoker(UUID id);
 
     RevocationStatus check(X509Certificate certificate, X509Certificate issuerCert);
 

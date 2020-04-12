@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OCSP extends BaseEntity {
+public class OCSPEntity extends BaseEntity {
 
     @Column(name = "serial_num")
     private BigInteger serialNum;

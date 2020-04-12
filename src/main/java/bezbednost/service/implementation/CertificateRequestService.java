@@ -97,12 +97,11 @@ public class CertificateRequestService implements ICertificateRequestService {
 
     @Override
     public void approveCertificateRequest(CertificateRequestRequest request) throws Exception {
-        System.out.println(request);
-        /*CertificateRequest certificateRequest = _certificateRequestRepository.findOneByEmail(request.getEmail());
+//        System.out.println(request);
+        CertificateRequest certificateRequest = _certificateRequestRepository.findOneByEmail(request.getEmail());
         X509Certificate certificate = generateCertificate(request, certificateRequest.getId());
-        //_keyStoreWriterService.write();
         _certificateService.saveCertificate(certificate, request.getExtension());
-        _certificateRequestRepository.delete(certificateRequest);*/
+        _certificateRequestRepository.delete(certificateRequest);
     }
 
     @Override
@@ -183,7 +182,7 @@ public class CertificateRequestService implements ICertificateRequestService {
         //build-ovanje sertifikata
         X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(new JcaX509CertificateHolder(issuerCert).getSubject(),
 
-                new BigInteger(incrementer.toString()),
+                new BigInteger(incrementer.getInc().toString()),
                 new Date(),
                 data.getEndDate(),
                 x500Name,
