@@ -63,7 +63,7 @@ public class DataLoader implements ApplicationRunner {
         c.add(Calendar.YEAR, 10);
 
         X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(x500Name,
-                new BigInteger("123456789"),
+                new BigInteger("10"),
                 new Date(),
                 c.getTime(),
                 x500Name,
