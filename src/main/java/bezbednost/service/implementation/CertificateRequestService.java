@@ -1,7 +1,9 @@
 package bezbednost.service.implementation;
 
 import bezbednost.dto.request.CertificateRequestRequest;
+import bezbednost.dto.request.IssuerEndDateRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
+import bezbednost.dto.response.IssuerEndDateResponse;
 import bezbednost.entity.CertificateRequest;
 import bezbednost.entity.Incrementer;
 import bezbednost.repository.ICertificateRequestRepository;
@@ -228,5 +230,17 @@ public class CertificateRequestService implements ICertificateRequestService {
         //UID (USER ID) je ID korisnika
         builder.addRDN(BCStyle.UID, String.valueOf(id));
         return builder.build();
+    }
+
+    @Override
+    public IssuerEndDateResponse getIssuerCertificateEndDate(IssuerEndDateRequest request) {
+
+        X509Certificate certificate = this._keyStoresReaderService.readCertificate("keystoreRoot.jks", "admin", request.getEmail());
+        if(certificate == null){
+            certificate = this._keyStoresReaderService.readCertificate("keystoreIntermediate.jks", "admin", request.getEmail());
+        }
+
+        IssuerEndDateResponse response = new IssuerEndDateResponse(certificate.getNotAfter());
+        return response;
     }
 }

@@ -1,7 +1,9 @@
 package bezbednost.controller;
 
 import bezbednost.dto.request.CertificateRequestRequest;
+import bezbednost.dto.request.IssuerEndDateRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
+import bezbednost.dto.response.IssuerEndDateResponse;
 import bezbednost.service.implementation.CertificateRequestService;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +43,10 @@ public class CertificateRequestController {
     @DeleteMapping("/deny/{id}/request")
     public void denyCertificateRequest(@PathVariable UUID id) throws Exception{
         _certificateRequestService.denyCertificateRequest(id);
+    }
+
+    @PostMapping("/issuer")
+    public IssuerEndDateResponse getIssuerEndDate(@RequestBody IssuerEndDateRequest request){
+        return _certificateRequestService.getIssuerCertificateEndDate(request);
     }
 }
