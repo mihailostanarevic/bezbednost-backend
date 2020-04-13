@@ -1,9 +1,12 @@
 package bezbednost.service.implementation;
 
+import bezbednost.converter.CertificateConverter;
 import bezbednost.dto.request.DownloadRequest;
+import bezbednost.dto.response.CertificateResponseDTO;
 import bezbednost.entity.FileRelations;
 import bezbednost.repository.IFileRelationsRepository;
 import bezbednost.service.ICertificateService;
+import bezbednost.util.enums.CertificateType;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -16,9 +19,8 @@ import java.io.*;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-@SuppressWarnings({"unused", "SpellCheckingInspection"})
+@SuppressWarnings({"unused", "SpellCheckingInspection", "UnnecessaryLocalVariable", "RedundantStringFormatCall"})
 @Service
 public class CertificateService implements ICertificateService {
 
@@ -48,7 +50,7 @@ public class CertificateService implements ICertificateService {
     }
 
     @Override
-    public List<X509Certificate> getAllActiveCACertificates() {
+    public List<X509Certificate> getAllActiveIntermediateCertificates() {
         List<X509Certificate> retList = new ArrayList<>();
         List<X509Certificate> CACertificates = _keyStoresReaderService.readAllCertificate("keystoreIntermediate.jks", "admin");
         for (X509Certificate certificate : CACertificates) {
@@ -68,6 +70,18 @@ public class CertificateService implements ICertificateService {
             if (_ocspListService.checkCertificateValidity(certificate)) {
                 retList.add(certificate);
             }
+        }
+
+        return retList;
+    }
+
+    @Override
+    public List<CertificateResponseDTO> listToDTO(CertificateType certificateType, List<X509Certificate> certificateList) {
+        List<CertificateResponseDTO> retList = new ArrayList<>();
+        for (X509Certificate certificate : certificateList) {
+            CertificateResponseDTO certificateResponseDTO = CertificateConverter.toCertificateResponseDTO(certificate);
+            certificateResponseDTO.setCertificateType(certificateType);
+            retList.add(certificateResponseDTO);
         }
 
         return retList;
