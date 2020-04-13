@@ -1,11 +1,12 @@
 package bezbednost.controller;
 
-import bezbednost.converter.CertificateConverter;
-import bezbednost.dto.request.DownloadRequest;
+import bezbednost.dto.request.EmailRequestDTO;
 import bezbednost.dto.response.CertificateResponseDTO;
 import bezbednost.service.implementation.CertificateService;
+import bezbednost.service.implementation.OCSPService;
 import bezbednost.util.enums.CertificateType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,13 +14,16 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 @RestController
 @RequestMapping("/certificate")
 public class CertificateController {
 
     @Autowired
     CertificateService _certificateService;
+
+    @Autowired
+    OCSPService _ocspService;
 
     @GetMapping()
     public List<CertificateResponseDTO> getAllValidCertificates(){
@@ -58,8 +62,14 @@ public class CertificateController {
     }
 
     @PostMapping("/download")
-    public ResponseEntity<Object> downloadCertificate(@RequestBody DownloadRequest request){
+    public ResponseEntity<Object> downloadCertificate(@RequestBody EmailRequestDTO request){
         return _certificateService.downloadCertificate(request);
+    }
+
+    @PostMapping("/revoke")
+    public ResponseEntity<HttpStatus> revokeCertificate(@RequestBody EmailRequestDTO request) {
+        _ocspService.revokeCertificate(request.getEmail());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
