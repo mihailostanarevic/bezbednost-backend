@@ -1,6 +1,8 @@
 package bezbednost.service;
 
 import bezbednost.dto.request.DownloadRequest;
+import bezbednost.dto.response.CertificateResponseDTO;
+import bezbednost.util.enums.CertificateType;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -12,9 +14,11 @@ public interface ICertificateService {
 
     List<X509Certificate> getAllActiveEndUserCertificates();
 
-    List<X509Certificate> getAllActiveCACertificates();
+    List<X509Certificate> getAllActiveIntermediateCertificates();
 
     List<X509Certificate> getAllActiveRootCertificates();
+
+    List<CertificateResponseDTO> listToDTO(CertificateType certificateType, List<X509Certificate> certificateList);
 
     void saveCertificate(X509Certificate certificate, String extension) throws IOException;
 
