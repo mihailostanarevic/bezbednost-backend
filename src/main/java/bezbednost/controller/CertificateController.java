@@ -2,6 +2,7 @@ package bezbednost.controller;
 
 import bezbednost.dto.request.EmailRequestDTO;
 import bezbednost.dto.response.CertificateResponseDTO;
+import bezbednost.dto.response.OCSPResponse;
 import bezbednost.service.implementation.CertificateService;
 import bezbednost.service.implementation.OCSPService;
 import bezbednost.util.enums.CertificateType;
@@ -70,6 +71,11 @@ public class CertificateController {
     public ResponseEntity<HttpStatus> revokeCertificate(@RequestBody EmailRequestDTO request) {
         _ocspService.revokeCertificate(request.getEmail());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/revoke")
+    public List<OCSPResponse> getRevokedCertificates() {
+        return _ocspService.getAll();
     }
 
 }
