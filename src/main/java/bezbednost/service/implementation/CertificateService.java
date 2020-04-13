@@ -1,7 +1,7 @@
 package bezbednost.service.implementation;
 
 import bezbednost.converter.CertificateConverter;
-import bezbednost.dto.request.DownloadRequest;
+import bezbednost.dto.request.EmailRequestDTO;
 import bezbednost.dto.response.CertificateResponseDTO;
 import bezbednost.entity.FileRelations;
 import bezbednost.repository.IFileRelationsRepository;
@@ -87,7 +87,7 @@ public class CertificateService implements ICertificateService {
         return retList;
     }
 
-    public ResponseEntity<Object> downloadCertificate(DownloadRequest request){
+    public ResponseEntity<Object> downloadCertificate(EmailRequestDTO request){
         FileRelations fr = _fileRelationsRepository.findOneByEmail(request.getEmail());
         String fileName = "certificates\\" + fr.getFileName();
 
