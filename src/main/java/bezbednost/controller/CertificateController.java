@@ -68,7 +68,7 @@ public class CertificateController {
     }
 
     @PostMapping("/file-name")
-    public List<String> getFileName(@RequestBody DownloadRequest request){
+    public List<String> getFileName(@RequestBody EmailRequestDTO request){
         return _certificateService.getFileName(request.getEmail());
     }
   
