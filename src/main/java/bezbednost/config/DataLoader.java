@@ -53,7 +53,7 @@ public class DataLoader implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         KeyPair keyPair = signatureService.generateKeys(true);
         X509Certificate cert = this.createInitialRootCertificate(keyPair);
-        keyStoresWriterService.write("rootCA@gmail.com", keyPair.getPrivate(), "keystoreRoot.jks", "admin", cert);
+        keyStoresWriterService.write("goran.sladic@uns.ac.rs", keyPair.getPrivate(), "keystoreRoot.jks", "admin", cert);
 
         Admin admin = _adminRepository.findOneById(UUID.fromString("a351022a-cc7a-4a17-a79b-8e0cf258db07"));
         admin.setPassword(_passwordEncoder.encode(admin.getPassword()));
@@ -114,7 +114,7 @@ public class DataLoader implements ApplicationRunner {
         builder.addRDN(BCStyle.O, "FTN");
         builder.addRDN(BCStyle.OU, "UNS");
         builder.addRDN(BCStyle.C, "RS");
-        builder.addRDN(BCStyle.E, "rootCA@gmail.com");
+        builder.addRDN(BCStyle.E, "goran.sladic@uns.ac.rs");
         //UID (USER ID) je ID korisnika
         builder.addRDN(BCStyle.UID, String.valueOf("a5af6079-5511-4eec-845e-c8b62539978d"));
         return builder.build();
