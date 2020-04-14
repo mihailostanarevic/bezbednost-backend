@@ -102,4 +102,9 @@ public class CertificateController {
     public ResponseEntity<Object> downloadCertificate(@RequestBody DownloadRequest request){
         return _certificateService.downloadCertificate(request);
     }
+
+    @PostMapping("/file-name")
+    public List<String> getFileName(@RequestBody DownloadRequest request){
+        return _certificateService.getFileName(request.getEmail());
+    }
 }

@@ -64,6 +64,7 @@ public class CertificateRequestService implements ICertificateRequestService {
 
     @Override
     public CertificateRequestResponse createCertificateRequest(CertificateRequestRequest request) throws Exception {
+        System.out.println(request);
         CertificateRequest certificateRequest = new CertificateRequest();
         certificateRequest.setCountry(request.getCountry());
         certificateRequest.setFirstName(request.getFirstName());

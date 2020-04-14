@@ -4,10 +4,12 @@ import bezbednost.dto.request.DownloadRequest;
 import bezbednost.entity.FileRelations;
 import bezbednost.repository.IFileRelationsRepository;
 import bezbednost.service.ICertificateService;
+import ch.qos.logback.core.pattern.util.RegularEscapeUtil;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -85,6 +87,7 @@ public class CertificateService implements ICertificateService {
             e.printStackTrace();
         }
 
+        System.out.println(file.getName());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", String.format("attachment; filename="+file.getName()));
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -92,7 +95,7 @@ public class CertificateService implements ICertificateService {
         headers.add("Expires", "0");
 
         ResponseEntity<Object> responseEntity = ResponseEntity.ok().headers(headers).contentLength(file.length())
-                .contentType(MediaType.parseMediaType("application/txt")).body(resource);
+                .contentType(MediaType.parseMediaType("application/octet-stream")).body(resource);
         return responseEntity;
     }
 
@@ -114,5 +117,12 @@ public class CertificateService implements ICertificateService {
 
         FileRelations fr = new FileRelations(certificate.getSubjectDN().getName().split(",")[6].split("=")[1], fn);
         _fileRelationsRepository.save(fr);
+    }
+
+    public List<String> getFileName(String email){
+        FileRelations file = _fileRelationsRepository.findOneByEmail(email);
+        List<String> retVal = new ArrayList<String>();
+        retVal.add(file.getFileName());
+        return retVal;
     }
 }
