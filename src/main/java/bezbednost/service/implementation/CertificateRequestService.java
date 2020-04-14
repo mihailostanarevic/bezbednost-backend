@@ -1,5 +1,6 @@
 package bezbednost.service.implementation;
 
+import bezbednost.config.AlgorithmConfig;
 import bezbednost.dto.request.CertificateRequestRequest;
 import bezbednost.dto.request.IssuerEndDateRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
@@ -23,6 +24,7 @@ import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -38,6 +40,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("SpellCheckingInspection")
 @Service
 public class CertificateRequestService implements ICertificateRequestService {
+
+    @Autowired
+    AlgorithmConfig config;
 
     private final ICertificateRequestRepository _certificateRequestRepository;
 
@@ -138,9 +143,9 @@ public class CertificateRequestService implements ICertificateRequestService {
      * @return the end date of issuers certificate
      * */
     private Date getIssuerEndDate(String email){
-        X509Certificate issuerCert = this._keyStoresReaderService.readCertificate("keystoreRoot.jks", "admin", email);
+        X509Certificate issuerCert = this._keyStoresReaderService.readCertificate(config.getRootFileName(), config.getKsPassword(), email);
         if(issuerCert == null){
-            issuerCert = this._keyStoresReaderService.readCertificate("keystoreIntermediate.jks", "admin", email);
+            issuerCert = this._keyStoresReaderService.readCertificate(config.getCAFileName(), config.getKsPassword(), email);
         }
 
         return issuerCert.getNotAfter();
@@ -155,9 +160,9 @@ public class CertificateRequestService implements ICertificateRequestService {
         builder = builder.setProvider("BC");
 
         //Citam ko mu je izdavac sert
-        X509Certificate issuerCert = this._keyStoresReaderService.readCertificate("keystoreRoot.jks", "admin", data.getIssuerEmail());
+        X509Certificate issuerCert = this._keyStoresReaderService.readCertificate(config.getRootFileName(), config.getKsPassword(), data.getIssuerEmail());
         if(issuerCert == null){
-            issuerCert = this._keyStoresReaderService.readCertificate("keystoreIntermediate.jks", "admin", data.getIssuerEmail());
+            issuerCert = this._keyStoresReaderService.readCertificate(config.getCAFileName(), config.getKsPassword(), data.getIssuerEmail());
         }
         /*
          if(issuerCert.getNotAfter() < data.getRequestDate()){
@@ -167,9 +172,9 @@ public class CertificateRequestService implements ICertificateRequestService {
         KeyPair keyPair = this._signatureService.generateKeys(data.isCertificateAuthority());
 
         //Citam privatni kljuc izdavacu
-        PrivateKey privKey = this._keyStoresReaderService.readPrivateKey("keystoreRoot.jks", "admin", data.getIssuerEmail(), "admin");
+        PrivateKey privKey = this._keyStoresReaderService.readPrivateKey(config.getRootFileName(), config.getKsPassword(), data.getIssuerEmail(), "admin");
         if(privKey == null){
-            privKey = this._keyStoresReaderService.readPrivateKey("keystoreIntermediate.jks", "admin", data.getIssuerEmail(), "admin");
+            privKey = this._keyStoresReaderService.readPrivateKey(config.getCAFileName(),config.getKsPassword(), data.getIssuerEmail(), "admin");
         }
 
         //Za potpisivanje hesiranog sert
@@ -211,9 +216,9 @@ public class CertificateRequestService implements ICertificateRequestService {
         certConverter = certConverter.setProvider("BC");
 
         if(data.isCertificateAuthority()){
-            _keyStoreWriterService.write(data.getEmail(), keyPair.getPrivate(), "keystoreIntermediate.jks", "admin", certConverter.getCertificate(certHolder));
+            _keyStoreWriterService.write(data.getEmail(), keyPair.getPrivate(), config.getCAFileName(), config.getKsPassword(), certConverter.getCertificate(certHolder));
         }else {
-            _keyStoreWriterService.write(data.getEmail(), keyPair.getPrivate(), "keystoreEndUser.jks", "admin", certConverter.getCertificate(certHolder));
+            _keyStoreWriterService.write(data.getEmail(), keyPair.getPrivate(), config.getEnd_userFileName(), config.getKsPassword(), certConverter.getCertificate(certHolder));
         }
 
         return certConverter.getCertificate(certHolder);
@@ -237,9 +242,9 @@ public class CertificateRequestService implements ICertificateRequestService {
     @Override
     public IssuerEndDateResponse getIssuerCertificateEndDate(IssuerEndDateRequest request) {
 
-        X509Certificate certificate = this._keyStoresReaderService.readCertificate("keystoreRoot.jks", "admin", request.getEmail());
+        X509Certificate certificate = this._keyStoresReaderService.readCertificate(config.getRootFileName(), config.getKsPassword(), request.getEmail());
         if(certificate == null){
-            certificate = this._keyStoresReaderService.readCertificate("keystoreIntermediate.jks", "admin", request.getEmail());
+            certificate = this._keyStoresReaderService.readCertificate(config.getCAFileName(), config.getKsPassword(), request.getEmail());
         }
 
         IssuerEndDateResponse response = new IssuerEndDateResponse(certificate.getNotAfter());

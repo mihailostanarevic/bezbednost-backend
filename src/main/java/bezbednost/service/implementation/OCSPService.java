@@ -1,5 +1,6 @@
 package bezbednost.service.implementation;
 
+import bezbednost.config.AlgorithmConfig;
 import bezbednost.dto.response.OCSPResponse;
 import bezbednost.entity.Admin;
 import bezbednost.entity.OCSPEntity;
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"SpellCheckingInspection", "TryWithIdenticalCatches", "ConstantConditions", "unused", "Convert2MethodRef", "FieldCanBeLocal"})
 @Service
 public class OCSPService implements IOCSPService {
+
+    @Autowired
+    AlgorithmConfig config;
 
     @Autowired
     IOCSPRepository _OCSPRepository;
@@ -278,7 +282,7 @@ public class OCSPService implements IOCSPService {
     private X509Certificate getCACertificateByName(String name) {
         String certEmail = getEmailFromName(name);
 
-        List<X509Certificate> CACertificates = _keyStoresReaderService.readAllCertificate("keystoreIntermediate.jks", "admin");
+        List<X509Certificate> CACertificates = _keyStoresReaderService.readAllCertificate(config.getCAFileName(), config.getKsPassword());
         for (X509Certificate certificate : CACertificates) {
             String subjectName = certificate.getSubjectDN().getName();
             String CAEmail = getEmailFromName(subjectName);
@@ -288,7 +292,7 @@ public class OCSPService implements IOCSPService {
             }
         }
 
-        List<X509Certificate> RootCertificates = _keyStoresReaderService.readAllCertificate("keystoreRoot.jks", "admin");
+        List<X509Certificate> RootCertificates = _keyStoresReaderService.readAllCertificate(config.getRootFileName(), config.getKsPassword());
         for (X509Certificate certificate : RootCertificates) {
             String subjectName = certificate.getSubjectDN().getName();
             String RootEmail = getEmailFromName(subjectName);
@@ -307,7 +311,7 @@ public class OCSPService implements IOCSPService {
      * */
     private X509Certificate getEndCertificateByName(String name) {
         String certEmail = getEmailFromName(name);
-        List<X509Certificate> Certificates = _keyStoresReaderService.readAllCertificate("keystoreEndUser.jks", "admin");
+        List<X509Certificate> Certificates = _keyStoresReaderService.readAllCertificate(config.getEnd_userFileName(), config.getKsPassword());
         for (X509Certificate certificate : Certificates) {
             String subjectName = certificate.getSubjectDN().getName();
             String CAEmail = getEmailFromName(subjectName);

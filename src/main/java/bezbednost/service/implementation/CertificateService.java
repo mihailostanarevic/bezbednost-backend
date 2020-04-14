@@ -1,5 +1,6 @@
 package bezbednost.service.implementation;
 
+import bezbednost.config.AlgorithmConfig;
 import bezbednost.converter.CertificateConverter;
 import bezbednost.dto.request.EmailRequestDTO;
 import bezbednost.dto.response.CertificateResponseDTO;
@@ -27,6 +28,9 @@ import java.util.List;
 public class CertificateService implements ICertificateService {
 
     @Autowired
+    AlgorithmConfig config;
+
+    @Autowired
     KeyStoresReaderService _keyStoresReaderService;
 
     private final IFileRelationsRepository _fileRelationsRepository;
@@ -41,7 +45,7 @@ public class CertificateService implements ICertificateService {
     @Override
     public List<X509Certificate> getAllActiveEndUserCertificates() {
         List<X509Certificate> retList = new ArrayList<>();
-        List<X509Certificate> certificates = _keyStoresReaderService.readAllCertificate("keystoreEndUser.jks", "admin");
+        List<X509Certificate> certificates = _keyStoresReaderService.readAllCertificate(config.getEnd_userFileName(), config.getKsPassword());
         for (X509Certificate certificate : certificates) {
             if (_ocspListService.checkCertificateValidity(certificate)) {
                 retList.add(certificate);
@@ -54,7 +58,8 @@ public class CertificateService implements ICertificateService {
     @Override
     public List<X509Certificate> getAllActiveIntermediateCertificates() {
         List<X509Certificate> retList = new ArrayList<>();
-        List<X509Certificate> CACertificates = _keyStoresReaderService.readAllCertificate("keystoreIntermediate.jks", "admin");
+        System.out.println(config.getCAFileName()+config.getKsPassword());
+        List<X509Certificate> CACertificates = _keyStoresReaderService.readAllCertificate(config.getCAFileName(), config.getKsPassword());
         for (X509Certificate certificate : CACertificates) {
             if (_ocspListService.checkCertificateValidity(certificate)) {
                 retList.add(certificate);
@@ -67,7 +72,7 @@ public class CertificateService implements ICertificateService {
     @Override
     public List<X509Certificate> getAllActiveRootCertificates() {
         List<X509Certificate> retList = new ArrayList<>();
-        List<X509Certificate> RootCertificates = _keyStoresReaderService.readAllCertificate("keystoreRoot.jks", "admin");
+        List<X509Certificate> RootCertificates = _keyStoresReaderService.readAllCertificate(config.getRootFileName(), config.getKsPassword());
         for (X509Certificate certificate : RootCertificates) {
             if (_ocspListService.checkCertificateValidity(certificate)) {
                 retList.add(certificate);

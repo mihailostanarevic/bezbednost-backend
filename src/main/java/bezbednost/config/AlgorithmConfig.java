@@ -30,6 +30,18 @@ public class AlgorithmConfig {
     @Value("${bezbednost.ca.keysize}")
     private String caKeySize;
 
+    @Value("${bezbednost.root.filename}")
+    private String rootFileName;
+
+    @Value("${bezbednost.ca.filename}")
+    private String CAFileName;
+
+    @Value("${bezbednost.enduser.filename}")
+    private String end_userFileName;
+
+    @Value("${bezbednost.password}")
+    private String ksPassword;
+
     public String getProvider() {
         return provider;
     }
@@ -84,5 +96,37 @@ public class AlgorithmConfig {
 
     public void setCaKeySize(int caKeySize) {
         this.caKeySize = caKeySize+"";
+    }
+
+    public String getRootFileName() {
+        return rootFileName;
+    }
+
+    public void setRootFileName(String rootFileName) {
+        this.rootFileName = rootFileName;
+    }
+
+    public String getCAFileName() {
+        return CAFileName;
+    }
+
+    public void setCAFileName(String CAFileName) {
+        this.CAFileName = CAFileName;
+    }
+
+    public String getEnd_userFileName() {
+        return end_userFileName;
+    }
+
+    public void setEnd_userFileName(String end_userFileName) {
+        this.end_userFileName = end_userFileName;
+    }
+
+    public String getKsPassword() {
+        return ksPassword;
+    }
+
+    public void setKsPassword(String ksPassword) {
+        this.ksPassword = ksPassword;
     }
 }
