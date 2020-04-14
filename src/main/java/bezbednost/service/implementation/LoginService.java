@@ -6,6 +6,7 @@ import bezbednost.dto.response.LoginResponse;
 import bezbednost.entity.Admin;
 import bezbednost.repository.IAdminRepository;
 import bezbednost.service.ILoginService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,8 +14,11 @@ public class LoginService implements ILoginService {
 
     private final IAdminRepository _adminRepository;
 
-    public LoginService(IAdminRepository adminRepository) {
+    private final PasswordEncoder _passwordEncoder;
+
+    public LoginService(IAdminRepository adminRepository, PasswordEncoder passwordEncoder) {
         _adminRepository = adminRepository;
+        _passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -25,7 +29,7 @@ public class LoginService implements ILoginService {
             throw new Exception(String.format("Bad credentials."));
         }
 
-        if (!admin.getPassword().equals(request.getPassword())) {
+        if (!_passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
             throw new Exception("Bad credentials.");
         }
 

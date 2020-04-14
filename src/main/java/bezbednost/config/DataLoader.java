@@ -1,5 +1,6 @@
 package bezbednost.config;
 
+import bezbednost.entity.Admin;
 import bezbednost.repository.IAdminRepository;
 import bezbednost.service.implementation.KeyStoresWriterService;
 import bezbednost.service.implementation.SignatureService;
@@ -19,6 +20,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -27,6 +29,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class DataLoader implements ApplicationRunner {
@@ -37,11 +40,24 @@ public class DataLoader implements ApplicationRunner {
     @Autowired
     private SignatureService signatureService;
 
+    private final PasswordEncoder _passwordEncoder;
+
+    private final IAdminRepository _adminRepository;
+
+    public DataLoader(PasswordEncoder passwordEncoder, IAdminRepository adminRepository) {
+        _passwordEncoder = passwordEncoder;
+        _adminRepository = adminRepository;
+    }
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         KeyPair keyPair = signatureService.generateKeys(true);
         X509Certificate cert = this.createInitialRootCertificate(keyPair);
         keyStoresWriterService.write("rootCA@gmail.com", keyPair.getPrivate(), "keystoreRoot.jks", "admin", cert);
+
+        Admin admin = _adminRepository.findOneById(UUID.fromString("a351022a-cc7a-4a17-a79b-8e0cf258db07"));
+        admin.setPassword(_passwordEncoder.encode(admin.getPassword()));
+        _adminRepository.save(admin);
     }
 
     private X509Certificate createInitialRootCertificate(KeyPair keyPair){
