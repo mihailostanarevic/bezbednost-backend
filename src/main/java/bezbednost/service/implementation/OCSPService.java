@@ -8,6 +8,7 @@ import bezbednost.service.IAdminService;
 import bezbednost.service.IOCSPService;
 import bezbednost.service.ISignatureService;
 import bezbednost.util.enums.RevocationStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -25,24 +26,24 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"SpellCheckingInspection", "TryWithIdenticalCatches", "ConstantConditions", "unused", "Convert2MethodRef", "FieldCanBeLocal"})
 @Service
 public class OCSPService implements IOCSPService {
 
+    @Autowired
+    IOCSPRepository _OCSPRepository;
 
-    private final IOCSPRepository _OCSPRepository;
+    @Autowired
+    ISignatureService  _signatureService;
 
-    private final ISignatureService _signatureService;
+    @Autowired
+    IAdminService _adminService;
 
-    private final IAdminService _adminService;
+    @Autowired
+    KeyStoresReaderService _keyStoresReaderService;
 
-    private final KeyStoresReaderService _keyStoresReaderService;
-
-    public OCSPService(IOCSPRepository OCSPRepository, SignatureService signatureService, IAdminService adminService, KeyStoresReaderService keyStoresReaderService) {
-        _OCSPRepository = OCSPRepository;
-        _signatureService = signatureService;
-        _adminService = adminService;
-        _keyStoresReaderService = keyStoresReaderService;
-    }
+    @Autowired
+    CertificateService _certificateService;
 
     @Override
     public OCSPResponse getOCSPEntity(UUID id) {
@@ -90,13 +91,44 @@ public class OCSPService implements IOCSPService {
         }
     }
 
+    @Override
+    public boolean revokeCertificate(String email) {
+        List<X509Certificate> root_certificates = _certificateService.getAllActiveRootCertificates();
+        List<X509Certificate> inter_certificates = _certificateService.getAllActiveIntermediateCertificates();
+        List<X509Certificate> end_certificates = _certificateService.getAllActiveEndUserCertificates();
+
+        if(root_certificates.isEmpty() && inter_certificates.isEmpty() && end_certificates.isEmpty()){
+            return false;
+        }
+
+        UUID id = _adminService.findAll().get(0).getId();
+        if(checkListCertificates(root_certificates, email, id)){
+            return true;
+        } else if(checkListCertificates(inter_certificates, email, id)) {
+            return true;
+        } else
+            return checkListCertificates(end_certificates, email, id);
+
+    }
+
+    private boolean checkListCertificates (List<X509Certificate> certificateList, String email, UUID admin_id) {
+        for (X509Certificate certificate : certificateList) {
+            String cert_mail = getEmailFromName(certificate.getSubjectDN().getName());
+            if (email.equals(cert_mail)) {
+                revoke(certificate, admin_id);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @param certificate the certificate to be revoked
      * @param id of user who revoke certificate (admin)
      * @return the Enum.RevocationStatus
      * @throws NullPointerException the certificate has a null value
      */
-    @Override
     public RevocationStatus revoke(X509Certificate certificate, UUID id) throws NullPointerException {
         if(!checkAdmin(id)){
             return RevocationStatus.UNKNOWN;

@@ -27,4 +27,5 @@ public interface IOCSPService {
 
     boolean checkCertificateValidity(X509Certificate certificate);
 
+    boolean revokeCertificate(String email);
 }

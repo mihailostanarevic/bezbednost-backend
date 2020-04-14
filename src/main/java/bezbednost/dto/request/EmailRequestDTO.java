@@ -3,7 +3,7 @@ package bezbednost.dto.request;
 import lombok.*;
 
 @Data
-public class DownloadRequest {
+public class EmailRequestDTO {
 
     private String email;
 

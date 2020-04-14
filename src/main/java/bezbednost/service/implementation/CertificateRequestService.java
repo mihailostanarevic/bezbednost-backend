@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("SpellCheckingInspection")
 @Service
 public class CertificateRequestService implements ICertificateRequestService {
 
@@ -86,11 +87,11 @@ public class CertificateRequestService implements ICertificateRequestService {
     }
 
     @Override
-    public List<CertificateRequestResponse> getAllCertificateRequests() throws Exception {
+    public List<CertificateRequestResponse> getAllCertificateRequests() {
         List<CertificateRequest> certificateRequests = _certificateRequestRepository.findAll();
 
         if(certificateRequests.isEmpty()){
-            throw new Exception("You do not have new certificate requests");
+            System.out.println("Lista je prazna");
         }
 
         return certificateRequests.stream()

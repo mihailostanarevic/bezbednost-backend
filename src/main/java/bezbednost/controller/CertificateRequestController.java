@@ -2,6 +2,7 @@ package bezbednost.controller;
 
 import bezbednost.dto.request.CertificateRequestRequest;
 import bezbednost.dto.request.IssuerEndDateRequest;
+import bezbednost.dto.request.UUIDRequestDTO;
 import bezbednost.dto.response.CertificateRequestResponse;
 import bezbednost.dto.response.IssuerEndDateResponse;
 import bezbednost.service.implementation.CertificateRequestService;
@@ -40,9 +41,9 @@ public class CertificateRequestController {
         _certificateRequestService.approveCertificateRequest(request);
     }
 
-    @DeleteMapping("/deny/{id}/request")
-    public void denyCertificateRequest(@PathVariable UUID id) throws Exception{
-        _certificateRequestService.denyCertificateRequest(id);
+    @PostMapping("/deny")
+    public void denyCertificateRequest(@RequestBody UUIDRequestDTO request) throws Exception{
+        _certificateRequestService.denyCertificateRequest(request.getUuid());
     }
 
     @PostMapping("/issuer")
