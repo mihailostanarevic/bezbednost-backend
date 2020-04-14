@@ -15,7 +15,7 @@ public interface IOCSPService {
 
     OCSPEntity getOCSPEntityBySerialNum(BigInteger serial_num);
 
-    List<OCSPResponse> getAll();
+    List<OCSPResponse> getAll() throws Exception;
 
     List<OCSPEntity> getAllByRevoker(UUID id);
 

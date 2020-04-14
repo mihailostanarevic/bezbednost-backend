@@ -27,7 +27,7 @@ public class CertificateController {
     OCSPService _ocspService;
 
     @GetMapping()
-    public List<CertificateResponseDTO> getAllValidCertificates(){
+    public List<CertificateResponseDTO> getAllValidCertificates() throws Exception {
         List<X509Certificate> endUserCertificates = _certificateService.getAllActiveEndUserCertificates();
         List<X509Certificate> CACertificates = _certificateService.getAllActiveIntermediateCertificates();
         List<X509Certificate> rootCertificates = _certificateService.getAllActiveRootCertificates();
@@ -36,23 +36,38 @@ public class CertificateController {
         retList.addAll(_certificateService.listToDTO(CertificateType.ROOT, rootCertificates));
         retList.addAll(_certificateService.listToDTO(CertificateType.INTERMEDIATE, CACertificates));
         retList.addAll(_certificateService.listToDTO(CertificateType.END_USER, endUserCertificates));
+
+        if(retList.isEmpty()){
+            throw new Exception("There are no valid certificates.");
+        }
+
         return retList;
     }
 
     @GetMapping("/end-user")
-    public List<CertificateResponseDTO> getAllEndUserCertificates(){
+    public List<CertificateResponseDTO> getAllEndUserCertificates() throws Exception {
         List<X509Certificate> certificateList = _certificateService.getAllActiveEndUserCertificates();
+
+        if(certificateList.isEmpty()){
+            throw new Exception("There are no valid end user certificates.");
+        }
+
         return _certificateService.listToDTO(CertificateType.END_USER, certificateList);
     }
 
     @GetMapping("/ca")
-    public List<CertificateResponseDTO> getAllValidCACertificates(){
+    public List<CertificateResponseDTO> getAllValidCACertificates() throws Exception{
         List<X509Certificate> intermediateCertificates = _certificateService.getAllActiveIntermediateCertificates();
         List<X509Certificate> rootCertificates = _certificateService.getAllActiveRootCertificates();
 
         List<CertificateResponseDTO> retList = new ArrayList<>();
         retList.addAll(_certificateService.listToDTO(CertificateType.ROOT, rootCertificates));
         retList.addAll(_certificateService.listToDTO(CertificateType.INTERMEDIATE,intermediateCertificates));
+
+        if(retList.isEmpty()){
+            throw new Exception("There are no valid CA certificates.");
+        }
+
         return retList;
     }
 
@@ -79,7 +94,7 @@ public class CertificateController {
     }
 
     @GetMapping("/revoke")
-    public List<OCSPResponse> getRevokedCertificates() {
+    public List<OCSPResponse> getRevokedCertificates() throws Exception {
         return _ocspService.getAll();
     }
 }

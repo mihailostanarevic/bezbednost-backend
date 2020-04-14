@@ -87,11 +87,11 @@ public class CertificateRequestService implements ICertificateRequestService {
     }
 
     @Override
-    public List<CertificateRequestResponse> getAllCertificateRequests() {
+    public List<CertificateRequestResponse> getAllCertificateRequests() throws Exception {
         List<CertificateRequest> certificateRequests = _certificateRequestRepository.findAll();
 
         if(certificateRequests.isEmpty()){
-            System.out.println("Lista je prazna");
+            throw new Exception("There are no certificate requests.");
         }
 
         return certificateRequests.stream()

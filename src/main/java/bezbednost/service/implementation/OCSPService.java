@@ -56,8 +56,13 @@ public class OCSPService implements IOCSPService {
     }
 
     @Override
-    public List<OCSPResponse> getAll() {
+    public List<OCSPResponse> getAll() throws Exception {
         List<OCSPEntity> ocspEntities = _OCSPRepository.findAll();
+
+        if(ocspEntities.isEmpty()){
+            throw new Exception("There are no revoked certificates;");
+        }
+
         return ocspEntities.stream()
                 .map(ocspEntity -> mapOCSPtoOCSPResponse(ocspEntity))
                 .collect(Collectors.toList());
