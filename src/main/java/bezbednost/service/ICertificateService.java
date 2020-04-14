@@ -21,5 +21,7 @@ public interface ICertificateService {
 
     void saveCertificate(X509Certificate certificate, String extension) throws IOException;
 
+    List<String> getFileName(String email);
+
     ResponseEntity<Object> downloadCertificate(EmailRequestDTO request);
 }

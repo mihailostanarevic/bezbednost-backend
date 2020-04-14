@@ -67,6 +67,11 @@ public class CertificateController {
         return _certificateService.downloadCertificate(request);
     }
 
+    @PostMapping("/file-name")
+    public List<String> getFileName(@RequestBody DownloadRequest request){
+        return _certificateService.getFileName(request.getEmail());
+    }
+  
     @PostMapping("/revoke")
     public ResponseEntity<HttpStatus> revokeCertificate(@RequestBody EmailRequestDTO request) {
         _ocspService.revokeCertificate(request.getEmail());
@@ -77,5 +82,4 @@ public class CertificateController {
     public List<OCSPResponse> getRevokedCertificates() {
         return _ocspService.getAll();
     }
-
 }
