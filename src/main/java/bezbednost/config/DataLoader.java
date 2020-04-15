@@ -51,7 +51,7 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        KeyPair keyPair = signatureService.generateKeys(true);
+        KeyPair keyPair = signatureService.generateKeys();
         X509Certificate cert = this.createInitialRootCertificate(keyPair);
         keyStoresWriterService.write("goran.sladic@uns.ac.rs", keyPair.getPrivate(), "keystoreRoot.jks", "admin", cert);
 

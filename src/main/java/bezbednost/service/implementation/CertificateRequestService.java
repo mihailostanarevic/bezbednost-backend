@@ -200,7 +200,7 @@ public class CertificateRequestService implements ICertificateRequestService {
             return null;
          }
 */
-        KeyPair keyPair = this._signatureService.generateKeys(data.isCertificateAuthority());
+        KeyPair keyPair = this._signatureService.generateKeys();
 
         //Citam privatni kljuc izdavacu
         PrivateKey privKey = this._keyStoresReaderService.readPrivateKey(config.getRootFileName(), config.getKsPassword(), data.getIssuerEmail(), "admin");
