@@ -1,6 +1,7 @@
 package bezbednost.service.implementation;
 
 import bezbednost.config.AlgorithmConfig;
+import bezbednost.converter.CertificateConverter;
 import bezbednost.dto.response.OCSPResponse;
 import bezbednost.entity.Admin;
 import bezbednost.entity.OCSPEntity;
@@ -98,6 +99,46 @@ public class OCSPService implements IOCSPService {
         else {
             return RevocationStatus.GOOD;
         }
+    }
+
+    @Override
+    public RevocationStatus checkCertificateStatus(BigInteger serialNumber) {
+        X509Certificate certificate = getCertificateBySerialNumber(serialNumber);
+        if(certificate != null){
+            String parentName = certificate.getIssuerDN().getName();
+            return check(certificate, getCACertificateByName(parentName));
+        }
+        else{
+            return RevocationStatus.UNKNOWN;
+        }
+    }
+
+    private X509Certificate getCertificateBySerialNumber(BigInteger serialNumber) {
+        List<X509Certificate> root_certificates = _certificateService.getAllActiveRootCertificates();
+        List<X509Certificate> inter_certificates = _certificateService.getAllActiveIntermediateCertificates();
+        List<X509Certificate> end_certificates = _certificateService.getAllActiveEndUserCertificates();
+
+        if(root_certificates.isEmpty() && inter_certificates.isEmpty() && end_certificates.isEmpty()){
+            return null;
+        }
+
+        for (X509Certificate certificate : root_certificates) {
+            if(certificate.getSerialNumber().equals(serialNumber)){
+                return certificate;
+            }
+        }
+        for (X509Certificate certificate : inter_certificates) {
+            if(certificate.getSerialNumber().equals(serialNumber)){
+                return certificate;
+            }
+        }
+        for (X509Certificate certificate : end_certificates) {
+            if(certificate.getSerialNumber().equals(serialNumber)){
+                return certificate;
+            }
+        }
+
+        return null;
     }
 
     @Override

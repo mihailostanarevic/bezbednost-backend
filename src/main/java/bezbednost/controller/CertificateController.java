@@ -6,6 +6,7 @@ import bezbednost.dto.response.OCSPResponse;
 import bezbednost.service.implementation.CertificateService;
 import bezbednost.service.implementation.OCSPService;
 import bezbednost.util.enums.CertificateType;
+import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
