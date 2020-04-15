@@ -1,6 +1,7 @@
 package bezbednost.service.implementation;
 
 import bezbednost.config.AlgorithmConfig;
+import bezbednost.converter.CertificateConverter;
 import bezbednost.dto.request.CertificateRequestRequest;
 import bezbednost.dto.request.IssuerEndDateRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
@@ -33,11 +34,12 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "RedundantThrows"})
 @Service
 public class CertificateRequestService implements ICertificateRequestService {
 
@@ -71,6 +73,9 @@ public class CertificateRequestService implements ICertificateRequestService {
     @Override
     public CertificateRequestResponse createCertificateRequest(CertificateRequestRequest request) throws Exception {
         System.out.println(request);
+        if(emailExist(request.getEmail())){
+            throw new Exception("This Email already exist. Please change field 'email'.");
+        }
         CertificateRequest certificateRequest = new CertificateRequest();
         certificateRequest.setCountry(request.getCountry());
         certificateRequest.setFirstName(request.getFirstName());
@@ -83,6 +88,32 @@ public class CertificateRequestService implements ICertificateRequestService {
         _certificateRequestRepository.save(certificateRequest);
 
         return mapCertificateRequestToCertificateRequestResponse(certificateRequest);
+    }
+
+    private boolean emailExist(String email) {
+        List<X509Certificate> endUserCertificates = _certificateService.getAllActiveEndUserCertificates();
+        List<X509Certificate> intermediateCertificates = _certificateService.getAllActiveIntermediateCertificates();
+        List<X509Certificate> rootCertificates = _certificateService.getAllActiveRootCertificates();
+        if(checkExist(endUserCertificates, email)
+                || checkExist(intermediateCertificates, email)
+                || checkExist(rootCertificates, email)){
+            return true;
+        }
+
+        CertificateRequest certificateRequests = _certificateRequestRepository.findOneByEmail(email);
+        return certificateRequests != null;
+    }
+
+    private boolean checkExist(List<X509Certificate> list, String email){
+        for (X509Certificate certificate : list) {
+            HashMap<String, String> subjectData;
+            subjectData = CertificateConverter.getDataFromCertificate(certificate.getSubjectDN().getName());
+            if(subjectData.get("email").equals(email)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
