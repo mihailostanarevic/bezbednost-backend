@@ -1,9 +1,11 @@
 package bezbednost.service;
 
 import bezbednost.dto.request.CertificateRequestRequest;
+import bezbednost.dto.request.EmailRequestDTO;
 import bezbednost.dto.request.IssuerEndDateRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
 import bezbednost.dto.response.IssuerEndDateResponse;
+import bezbednost.dto.response.PossibleExtensionsResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,4 +23,6 @@ public interface ICertificateRequestService {
     void denyCertificateRequest(UUID certificateId) throws Exception;
 
     IssuerEndDateResponse getIssuerCertificateEndDate(IssuerEndDateRequest request);
+
+    PossibleExtensionsResponse getPossibleExtensions(EmailRequestDTO request);
 }
