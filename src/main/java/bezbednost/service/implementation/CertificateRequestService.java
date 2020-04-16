@@ -3,19 +3,22 @@ package bezbednost.service.implementation;
 import bezbednost.config.AlgorithmConfig;
 import bezbednost.converter.CertificateConverter;
 import bezbednost.dto.request.CertificateRequestRequest;
+import bezbednost.dto.request.EmailRequestDTO;
 import bezbednost.dto.request.IssuerEndDateRequest;
 import bezbednost.dto.response.CertificateRequestResponse;
 import bezbednost.dto.response.IssuerEndDateResponse;
+import bezbednost.dto.response.PossibleExtensionsResponse;
 import bezbednost.entity.CertificateRequest;
+import bezbednost.entity.CertificatesExtensions;
 import bezbednost.entity.Incrementer;
 import bezbednost.repository.ICertificateRequestRepository;
+import bezbednost.repository.ICertificatesExtensionsRepository;
 import bezbednost.repository.IIncrementerRepository;
 import bezbednost.service.*;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x509.BasicConstraints;
-import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -60,7 +63,9 @@ public class CertificateRequestService implements ICertificateRequestService {
 
     private final ICertificateService _certificateService;
 
-    public CertificateRequestService(ICertificateRequestRepository certificateRequestRepository, IKeyStoresReaderService keyStoresReaderService, ISignatureService signatureService, IKeyStoresWriterService keyStoresWriterService, IIncrementerRepository incrementerRepository, IKeyStoresWriterService keyStoresWriterService1, ICertificateService certificateService) {
+    private final ICertificatesExtensionsRepository _certificatesExtensionsRepository;
+
+    public CertificateRequestService(ICertificateRequestRepository certificateRequestRepository, IKeyStoresReaderService keyStoresReaderService, ISignatureService signatureService, IKeyStoresWriterService keyStoresWriterService, IIncrementerRepository incrementerRepository, IKeyStoresWriterService keyStoresWriterService1, ICertificateService certificateService, ICertificatesExtensionsRepository certificatesExtensionsRepository) {
         _certificateRequestRepository = certificateRequestRepository;
         _keyStoresReaderService = keyStoresReaderService;
         _signatureService = signatureService;
@@ -68,6 +73,7 @@ public class CertificateRequestService implements ICertificateRequestService {
         _incrementerRepository = incrementerRepository;
         _keyStoresWriterService = keyStoresWriterService1;
         _certificateService = certificateService;
+        _certificatesExtensionsRepository = certificatesExtensionsRepository;
     }
 
     @Override
@@ -216,9 +222,19 @@ public class CertificateRequestService implements ICertificateRequestService {
             e.printStackTrace();
         }
 
+
+        CertificatesExtensions certificatesExtensions = new CertificatesExtensions();
+        certificatesExtensions.setEmail(data.getEmail());
+        certificatesExtensions.setDigitalSignature(data.isDigitalSignature());
+        certificatesExtensions.setKeyAgreement(data.isKeyAgreement());
+        certificatesExtensions.setKeyEncipherment(data.isKeyEncipherment());
+        certificatesExtensions.setNonRepudiation(data.isNonRepudiation());
+        _certificatesExtensionsRepository.save(certificatesExtensions);
+
         //Pravljenje identiteta na sertifikatu
         X500Name x500Name = this.getX500Name(data, id);
         Incrementer incrementer = _incrementerRepository.findAll().get(0);
+
         //build-ovanje sertifikata
         X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(new JcaX509CertificateHolder(issuerCert).getSubject(),
 
@@ -234,13 +250,64 @@ public class CertificateRequestService implements ICertificateRequestService {
 
         //Dodavanje ekstenzije da je CA ukoliko je to uneto u formi
         if(data.isCertificateAuthority()){
+
+            KeyUsage usage = new KeyUsage(KeyUsage.keyCertSign
+                    | (data.isDigitalSignature() ? KeyUsage.digitalSignature : KeyUsage.keyCertSign )
+                    | (data.isNonRepudiation() ? KeyUsage.nonRepudiation : KeyUsage.keyCertSign  )
+                    | (data.isKeyAgreement() ? KeyUsage.keyAgreement : KeyUsage.keyCertSign )
+                    | (data.isKeyEncipherment() ? KeyUsage.keyEncipherment : KeyUsage.keyCertSign ));
+
             try {
                 certGen.addExtension(X509Extensions.BasicConstraints, true,
                         new BasicConstraints(true));
+                certGen.addExtension(Extension.keyUsage, true, usage);
             } catch (CertIOException e) {
                 e.printStackTrace();
             }
+        } else {
+            if(data.isDigitalSignature()){
+                KeyUsage usage = new KeyUsage(KeyUsage.digitalSignature
+                        | (data.isNonRepudiation() ? KeyUsage.nonRepudiation : KeyUsage.digitalSignature  )
+                        | (data.isKeyAgreement() ? KeyUsage.keyAgreement : KeyUsage.digitalSignature )
+                        | (data.isKeyEncipherment() ? KeyUsage.keyEncipherment : KeyUsage.digitalSignature ));
+
+                try {
+                    certGen.addExtension(Extension.keyUsage, true, usage);
+                } catch (CertIOException e) {
+                    e.printStackTrace();
+                }
+            }else if(data.isNonRepudiation()){
+                KeyUsage usage = new KeyUsage(KeyUsage.nonRepudiation
+                        | (data.isKeyAgreement() ? KeyUsage.keyAgreement : KeyUsage.nonRepudiation )
+                        | (data.isKeyEncipherment() ? KeyUsage.keyEncipherment : KeyUsage.nonRepudiation ));
+
+                try {
+                    certGen.addExtension(Extension.keyUsage, true, usage);
+                } catch (CertIOException e) {
+                    e.printStackTrace();
+                }
+            }else if(data.isKeyAgreement()){
+                KeyUsage usage = new KeyUsage(KeyUsage.keyAgreement
+                        | (data.isKeyEncipherment() ? KeyUsage.keyEncipherment : KeyUsage.keyAgreement ));
+
+                try {
+                    certGen.addExtension(Extension.keyUsage, true, usage);
+                } catch (CertIOException e) {
+                    e.printStackTrace();
+                }
+            }else if(data.isKeyEncipherment()){
+                KeyUsage usage = new KeyUsage(KeyUsage.keyEncipherment);
+
+                try {
+                    certGen.addExtension(Extension.keyUsage, true, usage);
+                } catch (CertIOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
+
+
         X509CertificateHolder certHolder = certGen.build(contentSigner);
 
         JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
@@ -279,6 +346,24 @@ public class CertificateRequestService implements ICertificateRequestService {
         }
 
         IssuerEndDateResponse response = new IssuerEndDateResponse(certificate.getNotAfter());
+        return response;
+    }
+
+    @Override
+    public PossibleExtensionsResponse getPossibleExtensions(EmailRequestDTO request) {
+        CertificatesExtensions certificatesExtensions = _certificatesExtensionsRepository.findOneByEmail(request.getEmail());
+        PossibleExtensionsResponse response = new PossibleExtensionsResponse();
+        if(certificatesExtensions == null){
+            response.setDigitalSignature(true);
+            response.setKeyAgreement(true);
+            response.setKeyEncipherment(true);
+            response.setNonRepudiation(true);
+            return response;
+        }
+        response.setDigitalSignature(certificatesExtensions.isDigitalSignature());
+        response.setKeyAgreement(certificatesExtensions.isKeyAgreement());
+        response.setKeyEncipherment(certificatesExtensions.isKeyEncipherment());
+        response.setNonRepudiation(certificatesExtensions.isNonRepudiation());
         return response;
     }
 }

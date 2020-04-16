@@ -1,10 +1,12 @@
 package bezbednost.controller;
 
 import bezbednost.dto.request.CertificateRequestRequest;
+import bezbednost.dto.request.EmailRequestDTO;
 import bezbednost.dto.request.IssuerEndDateRequest;
 import bezbednost.dto.request.UUIDRequestDTO;
 import bezbednost.dto.response.CertificateRequestResponse;
 import bezbednost.dto.response.IssuerEndDateResponse;
+import bezbednost.dto.response.PossibleExtensionsResponse;
 import bezbednost.service.implementation.CertificateRequestService;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,5 +51,10 @@ public class CertificateRequestController {
     @PostMapping("/issuer")
     public IssuerEndDateResponse getIssuerEndDate(@RequestBody IssuerEndDateRequest request){
         return _certificateRequestService.getIssuerCertificateEndDate(request);
+    }
+
+    @PostMapping("/possible-extensions")
+    public PossibleExtensionsResponse getPossibleExtensions(@RequestBody EmailRequestDTO request){
+        return _certificateRequestService.getPossibleExtensions(request);
     }
 }
